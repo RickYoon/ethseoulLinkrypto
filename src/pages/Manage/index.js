@@ -14,6 +14,8 @@ import axios from 'axios';
 import { WsV2 } from "chainrunner-sdk";
 import BigNumber from "bignumber.js";
 
+import poolInfos from "./poolInfos.json"
+
 
 function Manage() {
 
@@ -420,7 +422,11 @@ async function testBifi () {
                       <div class="flex-1 min-w-0">
                       <div>
                           <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                          {res.category}
+                          {res.category === "빌려주기" ?
+                            <>담보물 제공</>
+                            :
+                            res.category
+                          }
                           </span>
                         </div>
                         {res.investedKLAY * 1000 > 1 ?
@@ -463,22 +469,12 @@ async function testBifi () {
                               <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25"></path>
                               </svg>
-                                {res.unStakingOption !== undefined ? 
-                                  res.unStakingOption.length > 1 ?
-                                    res.unStakingOption.map((res)=>(res))                                
-                                    :
-                                    "언스테이킹 옵션 :" +res.unStakingOption[0]
-                                  :
-                                  <></>
-                                }
-                                <></>
+                              인출방법 : {poolInfos[res.poolName].wdMethod}
                               
                               </div>
 
                             </div>
                           </div>
-
-
                         </div>
                               
                               

@@ -4,12 +4,13 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import TopNav from "component/topNav"
 
 import Landing from "pages/Landing"
-
 import Invest from "pages/Invest"
 import EthInvest from "pages/Ethereum/Invest"
 import Manage from "pages/Manage"
 import StableManage from "pages/Stable"
 import Detail from "pages/Detail"
+
+import EthManage from "pages/Ethereum/manage"
 // import Interaction from "pages/Interaction"
 import './App.css';
 
@@ -24,6 +25,7 @@ function App() {
             <Route path="/stable/:id" element={<TopNav />} />
             <Route path="/detail/:id" element={<TopNav />} />
             <Route path="/invest/:chain" element={<TopNav />} />
+            <Route path="/staking/:chain" element={<TopNav />} />
           </Routes>
         <Routes>
           <Route exact path="/" element={<Landing />} />
@@ -32,6 +34,7 @@ function App() {
           <Route exact path="/stable/:id" element={<StableManage />} />
           <Route exact path="/detail/:id" element={<Detail />} />
           <Route path="/invest/:chain" element={<EthInvest />} />
+          <Route path="/staking/:chain" element={<EthManage />} />
         </Routes>
       </Router>
     </>

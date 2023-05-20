@@ -24,7 +24,7 @@ function Landing() {
             {/* <svg className="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg> */}
         {/* </NavLink> */}
         <h1 className="mb-10 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl text-black">Linkrypto</h1>
-        <p className="mb-10 text-lg font-normal text-black lg:text-xl sm:px-16 xl:px-48">가장 쉽고 효율적인 디파이 투자 관리 서비스</p>
+        <p className="mb-10 text-lg font-normal text-black lg:text-xl sm:px-16 xl:px-48">가장 쉽고 친절한 크립토 에셋 관리 서비스</p>
         {/* <div className="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4"> */}
             <NavLink to="/invest" className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
                 바로 시작하기
@@ -66,11 +66,9 @@ function Landing() {
     </div>
 </section>
 
-
-
 <section className="bg-gray-000 pt-10 pb-10" style={{textAlign:"center", width:"100%"}}>
     <h2 className="mb-10 text-2xl text-black tracking-tight font-extrabold text-gray-900 dark:text-white">Linkrypto 란?</h2>
-    <p className="mb-2 font-medium text-gray-500 md:text-lg dark:text-gray-400"> 크립토 투자처 정보를 통합하여, 자산 컨시어지 서비스를 제공합니다. </p>
+    <p className="mb-2 font-medium text-gray-500 md:text-lg dark:text-gray-400"> 크립토 투자처 정보를 통합하여, 자산 맞춤형 투자관리 서비스를 제공합니다. </p>
     {/* <div style={{height:"200px"}}></div> */}
     <Svgcover style={{margin:"0px auto"}}>
     <svg width="639" height="123" viewBox="0 0 639 123" fill="none" xmlns="http://www.w3.org/2000/svg">

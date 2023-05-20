@@ -62,6 +62,7 @@
     "poolName": "BiFi",
     "poolType": "Lending",
     "poolToken": "oUSDT",
+    "isLinked": true,
     "unstakingOption": 1,
     "info": {
       "operation": "ozys",

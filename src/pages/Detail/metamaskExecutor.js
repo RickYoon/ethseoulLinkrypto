@@ -1,5 +1,7 @@
 import Web3 from 'web3';
 import Swal from 'sweetalert2'
+import { WsV2 } from "chainrunner-sdk";
+import BigNumber from "bignumber.js";
 
 const Toast = Swal.mixin({
     toast: true,
@@ -78,7 +80,7 @@ const metamaskOusdtWithdrawalExecutor = async (accountAddress, targetContract, a
 
     switch (protocolAddress) {
         case '0xe0e67b991d6b5cf73d8a17a10c3de74616c1ec11': // 1 - klaystation : hashed - ozys             
-            transactionInfo = await bifiWithdrawal(userAddress, protocolAddress, withdrawalAmount, userBalance)
+            transactionInfo = await bifiOusdtWithdrawal(userAddress, protocolAddress, withdrawalAmount, userBalance)
             break;
         case '0xeffa404dac6ba720002974c54d57b20e89b22862': // 2 - klaystation : hankyung     
             transactionInfo = await klaystationWithdrawal(userAddress, protocolAddress, withdrawalAmount, userBalance)
@@ -283,25 +285,82 @@ async function stakelyDeposit (addr, contAddr, amount) {
     }
 }
 
-// 
-
-async function bifiOusdtDeposit (addr, contAddr, amount) { // flag 가 full calculation 모드를 위함이라는데 잘 모르겠음.
-
-    let tokenAmount = 0;
-    let klayAmount = 0;
+async function bifiOusdtWithdrawal (addr, contAddr, amount, balance) { // flag 가 full calculation 모드를 위함이라는데 잘 모르겠음.
 
     const web3 = new Web3(window.ethereum);
-    const amountBN = web3.utils.toWei(amount,'ether');
-    const protocolABI = {name: 'deposit',type: 'function', inputs: [{"name": "amount","type": "uint256"},{"name": "flag","type": "bool"}]}
+
+    let amountBN = 0;
+
+    if(amount === balance){
+        amountBN = 115792089237316195423570985008687907853269984665640564039457584007913129639935
+    } else {
+        amountBN = web3.utils.toWei(amount.toString(),'ether');
+    }
+
+    // const amountBN = web3.utils.toWei(amount,'ether');
+    const protocolABI = {name: 'withdraw',type: 'function', inputs: [{"name": "amount","type": "uint256"},{"name": "flag","type": "bool"}]}
     const abiInput =[amountBN, false]
     const data = await web3.eth.abi.encodeFunctionCall(protocolABI,abiInput)
 
-        return {
-            from: addr,
-            to: contAddr,
-            data,
-            gas: 400000
-        }
+    return {
+        from: addr,
+        to: contAddr,
+        data,
+        gas: 650000
+    }
+
+}
+
+async function bifiOusdtDeposit (addr, contAddr, amount) { // flag 가 full calculation 모드를 위함이라는데 잘 모르겠음.
+        
+    const web3 = new Web3(window.ethereum);
+    const amountBN = web3.utils.toWei(amount,'ether');
+    const protocolABI = {name: 'deposit',type: 'function', inputs: [{"name": "amount","type": "uint256"},{"name": "flag","type": "bool"}]}
+    const abiInput =[amountBN, 0]
+    const data = await web3.eth.abi.encodeFunctionCall(protocolABI,abiInput)
+
+    return {
+        from: addr,
+        to: contAddr,
+        data,
+        gas: 400000
+    }
+
+    // const apiKey = "d0edf47c-25f0-4a2c-a5e2-79f336008bf2" // 발급 받은 API Key
+    // const client = new WsV2(
+    //     "wss://api.glitch.chainrunner.io",
+    //     window.ethereum,
+    //     "GLITCH/KOREA",
+    //     apiKey
+    // );
+
+    // const response = await client.call(
+    //     "Glitch.approve.lending",
+    //     undefined,
+    //     "bifi",
+    //     "0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167",
+    //     BigNumber(5),
+    //     BigNumber(0x2019),
+    //     null,
+    //   );
+          
+    // console.log(JSON.stringify(response.result, undefined, 2));
+    
+    // let tokenAmount = 0;
+    // let klayAmount = 0;
+
+    // const web3 = new Web3(window.ethereum);
+    // const amountBN = web3.utils.toWei(amount,'ether');
+    // const protocolABI = {name: 'deposit',type: 'function', inputs: [{"name": "amount","type": "uint256"},{"name": "flag","type": "bool"}]}
+    // const abiInput =[amountBN, false]
+    // const data = await web3.eth.abi.encodeFunctionCall(protocolABI,abiInput)
+
+    //     return {
+    //         from: addr,
+    //         to: contAddr,
+    //         data,
+    //         gas: 400000
+    //     }
 
 }
 

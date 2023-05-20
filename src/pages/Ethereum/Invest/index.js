@@ -10,7 +10,6 @@ import { useDispatch , useSelector } from 'react-redux';
 import axios from 'axios';
 import ethereum from '../../../assets/ci/ethereum.png';
 
-
 function EthInvest() {
 
   const [isloading, setIsloading] = useState(false)
@@ -19,19 +18,48 @@ function EthInvest() {
   const walletProvider = useSelector(state => state.walletProvider) // 프로바이더
 
   const [investedAsset, setInvestedAsset] = useState({
-      "isInvested": false,
-      "totalInvested": 0,
-      "totalDailyIncome": 0,
-      "totalApr": 0,
-      "totalAsset": 0,
-      "totalInvestCategory": {
-          "ethStaking": 0
-      },
-      "ethStaking": {
-          "Min": 0,
-          "Max": 0,
-          "balance": 0
+    isInvested: true, // 투자여부, true (투자 되있다), false (투자 안되어 있다.)
+    totalAsset : 13231000, // 투자된 자산 + 토큰 (5월 17일 새로 추가된 부분)
+    totalInvested : 1211200000, // 전체 투자된 금액
+    totalDailyIncome : 2122000, // 전체 일 수익
+    totalApr : 3.4, // 전체 자산 평균 연 수익율
+    ethInvestedinEth : 2112, // 클레이로 투자된 클레이 총합
+    ethInvestedinKRW : 21222, // 클레이로 투자된 클레이 총합을 원화로 바꾼것
+    ethDailyIncomeEth : 12, // 클레이로 투자된 일 수익 (KLAY 단위)
+    ethDailyIncomeKRW : 222, // 클레이로 투자된 일 수익 (KRW 단위)
+    ethTotalApr : 3.2, // 클레이 투자자산 평균 수익율
+    ethProtocolCategorySummary : [
+      {"hashed-Ozys (Klaystation)" : 75}
+    ],
+    totalInvestCategory : { // 위에서 가져옴 + 이름 수정함
+      "ethStaking": 100,
+      "ousdtStaking": 0
+    },
+    ethStaking :{
+      Min : 9,
+      Max : 15,
+      balance : 231
+    },
+    ethAprStatus : { // 수정됨
+      myStatus : 3.2, // 내 수익율
+      maxApr : 12 // 최대
+    },
+    ethProtocolCategory : [  // 수정됨
+      {
+        "poolName": "hashed-Ozys (Klaystation)",
+        "contractAddress": "0x123...", //추가
+        "category": "노드 스테이킹",
+        "investedKLAY": 0,
+        "tvlKLAY": 0,
+        "tvlKRW": 0,
+        "apr":0,
+        "liqToken": "sKLAY",
+        "unStakingOption": [
+            "스왑",
+            "7일대기"
+        ]
       }
+    ]
   })
 
   useEffect(() => {
@@ -48,20 +76,49 @@ function EthInvest() {
     if(userAccount === ""){ // 아무것도 아닌 거라면,
       // target 주소가 아무 것도 아닌 것이라면 아무 것도 안한다.
       setInvestedAsset({
-        "isInvested": false,
-        "totalInvested": 0,
-        "totalDailyIncome": 0,
-        "totalApr": 0,
-        "totalAsset": 0,
-        "totalInvestCategory": {
-            "ethStaking": 0
+        isInvested: true, // 투자여부, true (투자 되있다), false (투자 안되어 있다.)
+        totalAsset : 13231000, // 투자된 자산 + 토큰 (5월 17일 새로 추가된 부분)
+        totalInvested : 1211200000, // 전체 투자된 금액
+        totalDailyIncome : 2122000, // 전체 일 수익
+        totalApr : 3.4, // 전체 자산 평균 연 수익율
+        ethInvestedinEth : 2112, // 클레이로 투자된 클레이 총합
+        ethInvestedinKRW : 21222, // 클레이로 투자된 클레이 총합을 원화로 바꾼것
+        ethDailyIncomeEth : 12, // 클레이로 투자된 일 수익 (KLAY 단위)
+        ethDailyIncomeKRW : 222, // 클레이로 투자된 일 수익 (KRW 단위)
+        ethTotalApr : 3.2, // 클레이 투자자산 평균 수익율
+        ethProtocolCategorySummary : [
+          {"hashed-Ozys (Klaystation)" : 75}
+        ],
+        totalInvestCategory : { // 위에서 가져옴 + 이름 수정함
+          "ethStaking": 100,
+          "ousdtStaking": 0
         },
-        "ethStaking": {
-            "Min": 0,
-            "Max": 0,
-            "balance": 0
-        }
-    })
+        ethStaking :{
+          Min : 9,
+          Max : 15,
+          balance : 231
+        },
+        ethAprStatus : { // 수정됨
+          myStatus : 3.2, // 내 수익율
+          maxApr : 12 // 최대
+        },
+        ethProtocolCategory : [  // 수정됨
+          {
+            "poolName": "hashed-Ozys (Klaystation)",
+            "contractAddress": "0x123...", //추가
+            "category": "노드 스테이킹",
+            "investedKLAY": 0,
+            "tvlKLAY": 0,
+            "tvlKRW": 0,
+            "apr":0,
+            "liqToken": "sKLAY",
+            "unStakingOption": [
+                "스왑",
+                "7일대기"
+            ]
+          }
+        ]
+      })
 
     } else if (userAccount !== undefined || userAccount !== "") { // 지갑 주소가 로딩 되었는데,
 
@@ -126,8 +183,6 @@ function EthInvest() {
     <>
       <div>
         <div class="p-4 mt-10">   
-               
-
           <OverBox>
               <div style={{paddingTop:"30px"}}/>
               <SubTemplateBlockVertical>                
@@ -304,7 +359,7 @@ function EthInvest() {
                                           예치
                                         </div>
                                         :
-                                        <Link to={`/eth_node/ethereum`}>
+                                        <Link to={`/staking/ethereum`}>
                                           <div class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">예치</div>
                                         </Link>
                                     }

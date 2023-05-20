@@ -4,7 +4,7 @@ import styled, { keyframes } from 'styled-components';
 import react, {useState, useEffect} from "react";
 import { useDispatch , useSelector } from 'react-redux';
 import { useParams, useNavigate } from "react-router-dom";
-import {metamaskDepositExecutor, metamaskWithdrawalExecutor, metamaskSwapExecutor, metamaskOusdtDepositExecutor} from './metamaskExecutor.js';
+import {metamaskDepositExecutor, metamaskWithdrawalExecutor, metamaskSwapExecutor, metamaskOusdtDepositExecutor,metamaskOusdtWithdrawalExecutor} from './metamaskExecutor.js';
 import {kaikasKlayDepositExecutor} from './kaikasExecutor.js';
 import icons from "assets/tokenIcons"
 import Swal from 'sweetalert2'
@@ -70,10 +70,40 @@ function Detail() {
 
   const requestWithdrawal = async () => {
 
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+
+    setIsloading(true)
+
+    let trxReturn = {}
+
     if(walletProvider === "metamask"){
 
-      const metamaskReturn = await metamaskWithdrawalExecutor(userAccount, id, withdrawalAmount, detailAsset.investedToken)
-      console.log("metamaskReturn",metamaskReturn)
+      if(poolInfos[id].poolToken === "KLAY"){
+        trxReturn = await metamaskWithdrawalExecutor(userAccount, id, withdrawalAmount, detailAsset.investedToken)
+      } else {
+        trxReturn = await metamaskOusdtWithdrawalExecutor(userAccount, id, withdrawalAmount, detailAsset.investedToken)
+      }
+
+      setIsloading(false)
+
+      Toast.fire({
+        icon: 'success',
+        title: '인출이 성공적으로 실행되었습니다.',
+        html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
+      })
+
+      await loadAsset()
+
 
     } else {
 
