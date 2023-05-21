@@ -323,7 +323,7 @@ async function bifiOusdtDeposit (addr, contAddr, amount) { // flag 가 full calc
         from: addr,
         to: contAddr,
         data,
-        gas: 400000
+        gas: 800000
     }
 
     // const apiKey = "d0edf47c-25f0-4a2c-a5e2-79f336008bf2" // 발급 받은 API Key

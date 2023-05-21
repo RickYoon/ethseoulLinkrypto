@@ -19,10 +19,10 @@ function EthInvest() {
 
   const [investedAsset, setInvestedAsset] = useState({
     isInvested: true, // 투자여부, true (투자 되있다), false (투자 안되어 있다.)
-    totalAsset : 13231000, // 투자된 자산 + 토큰 (5월 17일 새로 추가된 부분)
-    totalInvested : 1211200000, // 전체 투자된 금액
-    totalDailyIncome : 2122000, // 전체 일 수익
-    totalApr : 3.4, // 전체 자산 평균 연 수익율
+    totalAsset : 13023100, // 투자된 자산 + 토큰 (5월 17일 새로 추가된 부분)
+    totalInvested : 6001120, // 전체 투자된 금액
+    totalDailyIncome : 986, // 전체 일 수익
+    totalApr : 6.2, // 전체 자산 평균 연 수익율
     ethInvestedinEth : 2112, // 클레이로 투자된 클레이 총합
     ethInvestedinKRW : 21222, // 클레이로 투자된 클레이 총합을 원화로 바꾼것
     ethDailyIncomeEth : 12, // 클레이로 투자된 일 수익 (KLAY 단위)
@@ -36,9 +36,9 @@ function EthInvest() {
       "ousdtStaking": 0
     },
     ethStaking :{
-      Min : 9,
-      Max : 15,
-      balance : 231
+      Min : 4,
+      Max : 9,
+      balance : 21
     },
     ethAprStatus : { // 수정됨
       myStatus : 3.2, // 내 수익율
@@ -64,8 +64,8 @@ function EthInvest() {
 
   useEffect(() => {
 
-    console.log("userAccount",userAccount)
-    console.log("localStorage.getItem.address", localStorage.getItem("address") === "")
+    // console.log("userAccount",userAccount)
+    // console.log("localStorage.getItem.address", localStorage.getItem("address") === "")
 
     // 1) local storage address check
     // null 이면 아예 접속한 적이 없는 것. // "" 이면 접속했엇으나 지갑해제한것.
@@ -77,10 +77,10 @@ function EthInvest() {
       // target 주소가 아무 것도 아닌 것이라면 아무 것도 안한다.
       setInvestedAsset({
         isInvested: true, // 투자여부, true (투자 되있다), false (투자 안되어 있다.)
-        totalAsset : 13231000, // 투자된 자산 + 토큰 (5월 17일 새로 추가된 부분)
-        totalInvested : 1211200000, // 전체 투자된 금액
-        totalDailyIncome : 2122000, // 전체 일 수익
-        totalApr : 3.4, // 전체 자산 평균 연 수익율
+        totalAsset : 13023100, // 투자된 자산 + 토큰 (5월 17일 새로 추가된 부분)
+        totalInvested : 6001120, // 전체 투자된 금액
+        totalDailyIncome : 986, // 전체 일 수익
+        totalApr : 6.2, // 전체 자산 평균 연 수익율
         ethInvestedinEth : 2112, // 클레이로 투자된 클레이 총합
         ethInvestedinKRW : 21222, // 클레이로 투자된 클레이 총합을 원화로 바꾼것
         ethDailyIncomeEth : 12, // 클레이로 투자된 일 수익 (KLAY 단위)
@@ -94,9 +94,9 @@ function EthInvest() {
           "ousdtStaking": 0
         },
         ethStaking :{
-          Min : 9,
-          Max : 15,
-          balance : 231
+          Min : 4,
+          Max : 9,
+          balance : 21
         },
         ethAprStatus : { // 수정됨
           myStatus : 3.2, // 내 수익율

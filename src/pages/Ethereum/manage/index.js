@@ -15,6 +15,7 @@ import { WsV2 } from "chainrunner-sdk";
 import BigNumber from "bignumber.js";
 
 import poolInfos from "./poolInfos.json"
+import Lido from "../../../assets/tokens/blog.svg"
 
 
 function Manage() {
@@ -33,11 +34,11 @@ function Manage() {
     "totalInvested": 0,
     "totalDailyIncome": 0,
     "totalApr": 0,
-    "ethInvestedinEth": 0,
-    "ethInvestedinKRW": 0,
-    "ethDailyIncomeEth": 0,
-    "ethDailyIncomeKRW": 0,
-    "ethTotalApr": 0,
+    "ethInvestedinEth": 3.21,
+    "ethInvestedinKRW": 6380230,
+    "ethDailyIncomeEth": 0.0005,
+    "ethDailyIncomeKRW": 1055,
+    "ethTotalApr": 6.2,
     "investCategory": {
         "ethStaking": 0
     },
@@ -47,20 +48,20 @@ function Manage() {
         "balance": 0
     },
     "ethAprStatus": {
-      "myStatus": 0,
-      "maxApr": 0
+      "myStatus": 6.2,
+      "maxApr": 7.6
     },
     "ethProtocolCategorySummary":[
-      {"":0},{"":0}
+      {"Lido":70},{"Compound":30}
     ],
     "ethProtocolCategory": [
       {
         "poolName": "Lido",
         "category": "노드 스테이킹",
-        "investedETH": 0,
-        "tvlKLAY": 0,
-        "tvlKRW": 0,
-        "apr":0,
+        "investedETH": 2.1,
+        "tvlETH": 6532123,
+        "tvlKRW": 15650671050000,
+        "apr": 5.6,
         "liqToken": "eETH",
         "unStakingOption": [
             "스왑",
@@ -319,7 +320,7 @@ async function testBifi () {
                           <img class="w-8 h-8 rounded-full" src={icons["BiFi"]} alt=""/> :  
                           res.poolName === "Klaybank" ?      
                           <img class="w-8 h-8 rounded-full" src={icons["Klaybank"]} alt=""/> :  
-                          <img class="w-8 h-8 rounded-full" src={icons["Klaystation"]} alt=""/>
+                          <img class="w-8 h-8 rounded-full" src={Lido} alt=""/>
                           }
                       </div>
                         
@@ -432,7 +433,9 @@ function TransScale(props) {
   return (
     <>
       풀 규모 :   
-      {props.data > 100000000 ?
+      {props.data > 1000000000000 ?
+        " " + (props.data / 1000000000000).toFixed(2) + " 조원"
+        :props.data > 100000000 ?
         " " + (props.data / 100000000).toFixed(2) + " 억원"
         : props.data >  10000 ?
         " " + (props.data / 10000).toFixed(2) + " 만원"

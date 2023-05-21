@@ -189,21 +189,27 @@ function Topnav () {
                                         </span>
                                         :
                                         <></>
-                                        }
+                                    }
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/invest/ethereum" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                                {/* <Link to="/invest/ethereum" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"> */}
+                                <div class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
                                     <img class="w-6 h-6 rounded-full" src={ethereum} alt=""/>
                                         <span class="flex-1 ml-3 whitespace-nowrap">Ethereum</span>
-                                        {chain === "ethereum" ?
-                                        <span class="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium text-gray-500 bg-green-100 rounded dark:bg-gray-700 dark:text-gray-400">
-                                            연결됨
+                                        <span class="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium text-gray-500 bg-red-100 rounded dark:bg-gray-700 dark:text-gray-400">
+                                            점검중
+                                        </span>
+
+                                        {/* {chain === "ethereum" ?
+                                        <span class="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium text-gray-500 bg-red-100 rounded dark:bg-gray-700 dark:text-gray-400">
+                                            점검중
                                         </span>
                                         :
                                         <></>
-                                        }
-                                </Link>
+                                        } */}
+                                </div>
+                                {/* </Link> */}
                             </li>
                         </ul>
                     </div>
