@@ -416,7 +416,7 @@ function Detail() {
                     연 수익율 : {detailAsset.apr.toFixed(2)} %
                   </dd>
                 </div>
-                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                {/* <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                   <dt class="text-sm font-medium leading-6 text-gray-900">정보</dt>
                   <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                     운영사 : {poolInfos[id].info.operation}
@@ -433,10 +433,11 @@ function Detail() {
                   <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                     오딧여부 : {poolInfos[id].info.auditPerformed}
                   </dd>
-                </div>
+                </div> */}
               </dl>
             </div>
           </div>
+          
           </div>
             </SubTemplateBlockVertical>
           </OverBox>
