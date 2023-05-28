@@ -28,18 +28,6 @@ function Manage() {
 
   const userAccount = useSelector(state => state.account) // 지갑주소
   const walletProvider = useSelector(state => state.walletProvider) // 프로바이더
-  const [klayStakingList, setKlayStakingList] = useState([
-    {
-        "poolName": "",
-        "contractAddress": "",
-        "category": "",
-        "investedKLAY": 0,
-        "tvlKLAY": 0,
-        "tvlKRW": 0,
-        "apr":0,
-        "liqToken": "",
-        "unStakingOption": []
-    }])
 
   // nodeklay => "클레이 노드 스테이킹"
   const [investedAsset, setInvestedAsset] = useState({
@@ -92,10 +80,8 @@ function Manage() {
 
 useEffect(() => {
 
-
-
-  console.log("userAccount",userAccount)
-  console.log("localStorage.getItem.address", localStorage.getItem("address") === "")
+  // console.log("userAccount",userAccount)
+  // console.log("localStorage.getItem.address", localStorage.getItem("address") === "")
 
   // 1) local storage address check
   // null 이면 아예 접속한 적이 없는 것. // "" 이면 접속했엇으나 지갑해제한것.
@@ -174,11 +160,11 @@ useEffect(() => {
 
 }, [userAccount])
 
-useEffect(() => {
+// useEffect(() => {
 
-  reArrage()
+//   reArrage()
 
-}, [sortstate])
+// }, [sortstate])
 
 const loadAsset = async () => {
 
@@ -189,16 +175,10 @@ const loadAsset = async () => {
   const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
 
   assetList.data.klayProtocolCategory.sort(function(a,b){
-    if(a.investedKLAY < b.investedKLAY) return 1;
-    if(a.investedKLAY === b.investedKLAY) return 0;
-    if(a.investedKLAY > b.investedKLAY) return -1;
+    if(a.apr < b.apr) return 1;
+    if(a.apr === b.apr) return 0;
+    if(a.apr > b.apr) return -1;
   })
-
-  assetList.data.oUsdtProtocolCategory.sort(function(a,b){
-    if(a.investedoUSDT < b.investedoUSDT) return 1;
-    if(a.investedoUSDT === b.investedoUSDT) return 0;
-    if(a.investedoUSDT > b.investedoUSDT) return -1;
-  })    
 
   setInvestedAsset(assetList.data)
   localStorage.setItem("lastAddress", userAccount)
@@ -207,40 +187,47 @@ const loadAsset = async () => {
 
   // console.log("assetList",assetList)
   // console.log("loading 종료")
+  initialArrange()
   setIsloading(false)
 
 }
 
+function initialArrange() {
+
+  investedAsset.klayProtocolCategory.sort(function(a,b){
+    if(a.apr < b.apr) return 1;
+    if(a.apr === b.apr) return 0;
+    if(a.apr > b.apr) return -1;
+  })    
+
+  setInvestedAsset({...investedAsset})
+}
+
   function sortHandler(e) {
     setSortstate(sortStates.indexOf(e.target.innerText))
-    setIsDropdown(true)    
-  }
+    setIsDropdown(true)
 
-  function reArrage() {
-
-    if(sortstate === 0){
+    if(sortStates.indexOf(e.target.innerText) === 0){
       investedAsset.klayProtocolCategory.sort(function(a,b){
         if(a.apr < b.apr) return 1;
         if(a.apr === b.apr) return 0;
         if(a.apr > b.apr) return -1;
       })    
-    } else if(sortstate === 1){
+    } else if(sortStates.indexOf(e.target.innerText) === 1){
       investedAsset.klayProtocolCategory.sort(function(a,b){
         if(a.investedKLAY < b.investedKLAY) return 1;
         if(a.investedKLAY === b.investedKLAY) return 0;
         if(a.investedKLAY > b.investedKLAY) return -1;
       })    
-    } else if(sortstate === 2){
+    } else if(sortStates.indexOf(e.target.innerText) === 2){
       investedAsset.klayProtocolCategory.sort(function(a,b){
         if(a.tvlKLAY < b.tvlKLAY) return 1;
         if(a.tvlKLAY === b.tvlKLAY) return 0;
         if(a.tvlKLAY > b.tvlKLAY) return -1;
       })    
     }
-    setInvestedAsset({...investedAsset})
-    // setInvestedAsset(assetList.data)
-    // const sortStates = ["수익률순","내 보유량순","풀규모순"]
 
+    setInvestedAsset({...investedAsset})
   }
 
   return (
