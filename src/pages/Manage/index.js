@@ -21,7 +21,10 @@ function Manage() {
 
   const { id } = useParams();  
   const [showModal, setShowModal] = useState(false);
-  const [isloading, setIsloading] = useState(false)
+  const [isloading, setIsloading] = useState(false);
+  const [isDropdown, setIsDropdown] = useState(true);
+  const [sortstate, setSortstate] = useState(0);
+  const sortStates = ["수익률순","내 보유량순","풀규모순"]
 
   const userAccount = useSelector(state => state.account) // 지갑주소
   const walletProvider = useSelector(state => state.walletProvider) // 프로바이더
@@ -171,6 +174,12 @@ useEffect(() => {
 
 }, [userAccount])
 
+useEffect(() => {
+
+  reArrage()
+
+}, [sortstate])
+
 const loadAsset = async () => {
 
   console.log("loading 시작")
@@ -178,7 +187,6 @@ const loadAsset = async () => {
   const time = Date.now();
 
   const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
-  // const assetList = {data : {"isInvested":true,"totalInvested":784984.7458947534,"totalDailyIncome":154.0368830554755,"totalApr":7.162363677674151,"klayInvestedinKlay":2008.391644997094,"klayInvestedinKRW":515955.8135997534,"klayDailyIncomeKlay":0.41339559243565865,"klayDailyIncomeKRW":106.2013276967207,"KlayTotalApr":7.5129465716948705,"oUsdtInvestedinoUsdt":200.021511,"oUsdtInvestedinKRW":269028.932295,"oUsdtDailyIncomeoUsdt":0.035565468668219184,"oUsdtDailyIncomeKRW":47.8355553587548,"oUsdtTotalApr":6.49,"klayProtocolCategorySummary":[{"Swapscanner":99.49993617917542},{"hashed-Ozys (Klaystation)":0.4994045869979962},{"Stake.ly":0.000632346785132059},{"Kokoa Finance":0.00002678900932616046},{"Klayswap":9.80321264284511e-8}],"oUsdtProtocolCategorySummary":[{"Klaybank":100}],"totalInvestCategory":{"klayStaking":65.72813246347211,"ousdtStaking":34.2718675365279},"klayStaking":{"Min":0.7,"Max":7.52,"balance":0.8934066},"oUsdtStaking":{"Min":-9.3,"Max":8.575557219428216,"balance":368.744119},"klayAprStatus":{"myStatus":7.5129465716948705,"maxApr":7.52},"oUsdtAprStatus":{"myStatus":6.49,"maxApr":8.575557219428216},"klayProtocolCategory":[{"poolName":"hashed-Ozys (Klaystation)","contractAddress":"0xe33337cb6fbb68954fe1c3fde2b21f56586632cd","category":"노드 스테이킹","investedKlay":10.03,"tvlKLAY":136950507.0273753,"tvlKRW":35182585255.33272,"apr":6.11,"liqToken":"sKLAY","unStakingOption":["스왑","7일대기"]},{"poolName":"Hankyung (Klaystation)","contractAddress":"0xeffa404dac6ba720002974c54d57b20e89b22862","category":"노드 스테이킹","investedKlay":0,"tvlKLAY":24611139.655280113,"tvlKRW":6322601777.441461,"apr":5.46,"liqToken":"X","unStakingOption":["7일대기"]},{"poolName":"FSN (Klaystation)","contractAddress":"0x962cdb28e662b026df276e5ee7fdf13a06341d68","category":"노드 스테이킹","investedKlay":0,"tvlKLAY":20184993.2266302,"tvlKRW":5185524759.921298,"apr":5.65,"liqToken":"X","unStakingOption":["7일대기"]},{"poolName":"Jump (Klaystation)","contractAddress":"0x0795aea6948fc1d31809383edc4183b220abd71f","category":"노드 스테이킹","investedKlay":0,"tvlKLAY":17357922.85614072,"tvlKRW":4459250381.742551,"apr":6.23,"liqToken":"X","unStakingOption":["7일대기"]},{"poolName":"Stake.ly","contractAddress":"0xf80f2b22932fcec6189b9153aa18662b15cc9c00","category":"노드 스테이킹","investedKlay":0.0127,"tvlKLAY":88561590,"tvlKRW":22751472470.999996,"apr":5.94,"liqToken":"stKLAY","unStakingOption":["7일대기"]},{"poolName":"Kleva","contractAddress":"0xa691c5891d8a98109663d07bcf3ed8d3edef820a","category":"빌려주기","investedKlay":0,"tvlKlay":13482193.653138217,"tvlKRW":3463575549.4912076,"apr":1.5},{"poolName":"BiFi","contractAddress":"0x829fcfb6a6eea9d14eb4c14fac5b29874bdbad13","category":"빌려주기","investedKlay":0,"tvlKlay":223571.94522558505,"tvlKRW":57435632.728452794,"apr":1.7445387899711675},{"poolName":"Klaymore stakehouse","contractAddress":"0x74ba03198fed2b15a51af242b9c63faf3c8f4d34","category":"노드 스테이킹","investedKlay":0,"tvlKLAY":20146784.379348762,"tvlKRW":5175708907.054697,"apr":5.532493555770537,"liqToken":"AKLAY","unStakingOption":["스왑"]},{"poolName":"Kokoa Finance","contractAddress":"0x7087d5a9e3203d39ec825d02d92f66ed3203b18a","category":"노드 스테이킹","investedKlay":0.000538028225084099,"tvlKlay":13970819128572604000,"tvlKRW":3.589103434130302e+21,"apr":0.7,"liqToken":"KSD 토큰","unStakingOption":["7일대기"]},{"poolName":"Klaybank","contractAddress":"0x6d219198816947d8bb4f88ba502a0518a7c516b1","category":"빌려주기","investedKlay":0,"tvlKlay":1928798.128,"tvlKRW":495508239.0832,"apr":1.55},{"poolName":"Swapscanner","contractAddress":"0xf50782a24afcb26acb85d086cf892bfffb5731b5","category":"노드 스테이킹","investedKlay":1998.348405,"tvlKLAY":56878431,"tvlKRW":14612068923.9,"apr":7.52,"liqToken":"X","unStakingOption":["스왑","7일대기"]},{"poolName":"Klayswap","contractAddress":"0xe4c3f5454a752bddda18ccd239bb1e00ca42d371","category":"빌려주기","investedKlay":0.000001968869036602,"tvlKlay":23080068.8485,"tvlKRW":5929269687.179649,"apr":1.87}],"oUsdtProtocolCategory":[{"poolName":"Kleva","contractAddress":"0xaee24956f6ccc58deac3c49ddb65a5c72d8bdd30","category":"빌려주기","investedoUSDT":0,"tvloUSDT":8730391.609106,"tvlKRW":11742376714.24757,"apr":1.51},{"poolName":"BiFi","contractAddress":"0xe0e67b991d6b5cf73d8a17a10c3de74616c1ec11","category":"빌려주기","investedoUSDT":0,"tvloUSDT":3064923.8911345857,"tvlKRW":4122322633.576018,"apr":8.575557219428216},{"poolName":"Kokoa Finance","contractAddress":"0xaee24956f6ccc58deac3c49ddb65a5c72d8bdd30","category":"노드 스테이킹","investedoUSDT":0,"tvloUSDT":144472.428844,"tvlKRW":194315416.79518002,"apr":-9.3,"liqToken":"KSD 토큰","unStakingOption":["7일대기"]},{"poolName":"Klaybank","contractAddress":"0x4b6ece52d0ef60ae054f45c45d6ba4f7a0c2cc67","category":"빌려주기","investedoUSDT":200.021511,"tvloUSDT":95600.495,"tvlKRW":128582665.77499999,"apr":6.49},{"poolName":"Klayswap","contractAddress":"0x4b419986e15018e6dc1c9dab1fa4824d8e2e06b5","category":"빌려주기","investedoUSDT":0,"tvloUSDT":7815978.6211,"tvlKRW":10512491245.3795,"apr":1.58}]}}
 
   assetList.data.klayProtocolCategory.sort(function(a,b){
     if(a.investedKLAY < b.investedKLAY) return 1;
@@ -197,44 +205,43 @@ const loadAsset = async () => {
   localStorage.setItem("assetList", JSON.stringify(assetList.data))
   localStorage.setItem("assetTimestamp", time)
 
-  // console.log("storage assetList", localStorage.getItem("assetList"))
-  // console.log("storage assetList", time - localStorage.getItem("assetTimestamp")) // 1000
-
-  console.log("assetList",assetList)
-  console.log("loading 종료")
+  // console.log("assetList",assetList)
+  // console.log("loading 종료")
   setIsloading(false)
 
 }
 
-async function testBifi () {
-  const client = new WsV2("wss://api.glitch.chainrunner.io", window.ethereum, "GLITCH/KOREA");
-  const response = await client.call(
-    "Glitch.view.info.bridges",
-    undefined,
-    BigNumber(1),
-  );
-  
-  console.log(response.result);  // const response = await client.call(
-  //   "Glitch.view.info.lendings",
-  //   undefined,
-  //   new BigNumber(1),
-  // );
-  
-  //   "Glitch.view.account.balance",
-  //   undefined,
-  //   "0x0000000000000000000000000000000000000000",
-  //   BigNumber(0xbfc0),
-  // );
-  
-  // const response = await client.call(
-  //   "Glitch.view.info.assets",
-  //   undefined,
-  //   new BigNumber(0xbfc)
-  // );
+  function sortHandler(e) {
+    setSortstate(sortStates.indexOf(e.target.innerText))
+    setIsDropdown(true)    
+  }
 
-  console.log(response.result);
+  function reArrage() {
 
-}
+    if(sortstate === 0){
+      investedAsset.klayProtocolCategory.sort(function(a,b){
+        if(a.apr < b.apr) return 1;
+        if(a.apr === b.apr) return 0;
+        if(a.apr > b.apr) return -1;
+      })    
+    } else if(sortstate === 1){
+      investedAsset.klayProtocolCategory.sort(function(a,b){
+        if(a.investedKLAY < b.investedKLAY) return 1;
+        if(a.investedKLAY === b.investedKLAY) return 0;
+        if(a.investedKLAY > b.investedKLAY) return -1;
+      })    
+    } else if(sortstate === 2){
+      investedAsset.klayProtocolCategory.sort(function(a,b){
+        if(a.tvlKLAY < b.tvlKLAY) return 1;
+        if(a.tvlKLAY === b.tvlKLAY) return 0;
+        if(a.tvlKLAY > b.tvlKLAY) return -1;
+      })    
+    }
+    setInvestedAsset({...investedAsset})
+    // setInvestedAsset(assetList.data)
+    // const sortStates = ["수익률순","내 보유량순","풀규모순"]
+
+  }
 
   return (
     <>
@@ -388,11 +395,32 @@ async function testBifi () {
               
               <h5 class="mb-2 text-1xl font-bold tracking-tight text-black dark:text-white">투자상품</h5>
                 <div style={{position:"relative"}} >
-                <button onClick={testBifi} id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-blue-700 border border-blue-200 bg-white hover:bg-blue-100 focus:ring-1 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-2 py-1.5 text-center inline-flex items-center" type="button">
-                  내 보유량순
-                </button>  
+                <button style={{width:"100px", display:"flex", alignItems:"center", justifyContent:"center"}} onClick={()=>setIsDropdown(!isDropdown)} id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-blue-700 border border-blue-200 bg-white hover:bg-blue-100 font-medium rounded-lg text-sm px-2 py-1.5 text-center inline-flex items-center" type="button">
+                  {sortStates[sortstate]}
+                </button>
+                <div style={{position:"absolute"}} id="dropdown" class="bg-white divide-y divide-gray-100 rounded-lg shadow w-30 dark:bg-gray-700">
+                      <ul hidden={isDropdown} class="text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+                        {sortStates.map((res)=>(
+                          res !== sortStates[sortstate] ?
+                          <li>
+                            <div onClick={sortHandler} class="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                             {res}
+                            </div>
+                          </li>
+                          :
+                          <></>
+                        ))}
+                        {/* <li>
+                          <div class="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                            풀규모순
+                          </div>
+                        </li> */}
+                      </ul>
+                  </div>
+
                 </div>
               </div>
+
               <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700" style={{marginLeft:"15px"}}>
 
               {investedAsset.klayProtocolCategory.map((res)=>(
@@ -469,10 +497,8 @@ async function testBifi () {
                               <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25"></path>
                               </svg>
-                              인출방법 : {poolInfos[res.poolName].wdMethod}
-                              
+                                인출방법 : {poolInfos[res.poolName].wdMethod}
                               </div>
-
                             </div>
                           </div>
                         </div>
