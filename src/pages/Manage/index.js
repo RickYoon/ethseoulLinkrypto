@@ -174,11 +174,13 @@ const loadAsset = async () => {
 
   const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
 
+  console.log("assetList.data.klayProtocolCategory",assetList.data.klayProtocolCategory)
   assetList.data.klayProtocolCategory.sort(function(a,b){
     if(a.apr < b.apr) return 1;
     if(a.apr === b.apr) return 0;
     if(a.apr > b.apr) return -1;
   })
+  console.log("assetList.data.klayProtocolCategory after",assetList.data.klayProtocolCategory)
 
   setInvestedAsset(assetList.data)
   localStorage.setItem("lastAddress", userAccount)
@@ -187,21 +189,21 @@ const loadAsset = async () => {
 
   // console.log("assetList",assetList)
   // console.log("loading 종료")
-  initialArrange()
+  // initialArrange()
   setIsloading(false)
 
 }
 
-function initialArrange() {
+// function initialArrange() {
 
-  investedAsset.klayProtocolCategory.sort(function(a,b){
-    if(a.apr < b.apr) return 1;
-    if(a.apr === b.apr) return 0;
-    if(a.apr > b.apr) return -1;
-  })    
+//   investedAsset.klayProtocolCategory.sort(function(a,b){
+//     if(a.apr < b.apr) return 1;
+//     if(a.apr === b.apr) return 0;
+//     if(a.apr > b.apr) return -1;
+//   })    
 
-  setInvestedAsset({...investedAsset})
-}
+//   setInvestedAsset({...investedAsset})
+// }
 
   function sortHandler(e) {
     setSortstate(sortStates.indexOf(e.target.innerText))
