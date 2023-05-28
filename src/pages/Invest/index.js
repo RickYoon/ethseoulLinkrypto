@@ -22,7 +22,7 @@ function Invest() {
       "totalInvested": 0,
       "totalDailyIncome": 0,
       "totalApr": 0,
-      "totalAsset": 0,
+      "totalAssetKRW": 0,
       "totalInvestCategory": {
           "klayStaking": 0,
           "ousdtStaking": 0
@@ -57,7 +57,7 @@ function Invest() {
         "totalInvested": 0,
         "totalDailyIncome": 0,
         "totalApr": 0,
-        "totalAsset": 0,
+        "totalAssetKRW": 0,
         "totalInvestCategory": {
             "klayStaking": 0,
             "ousdtStaking": 0
@@ -163,7 +163,7 @@ function Invest() {
                           <><ProductSkeleton width="80%" height="30px" /></>   // 로딩 중이고, 자산이 로딩 안된 상황
                           :
                           userAccount !== "" ?
-                            <div style={{float:"right"}}> {Number(investedAsset.totalAsset.toFixed(0)).toLocaleString()} 원 </div>
+                            <div style={{float:"right"}}> {Number(investedAsset.totalAssetKRW.toFixed(0)).toLocaleString()} 원 </div>
                             :  
                             "-"
                         }
