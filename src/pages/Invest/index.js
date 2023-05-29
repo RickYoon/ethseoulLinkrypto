@@ -120,7 +120,7 @@ function Invest() {
       if(a.apr < b.apr) return 1;
       if(a.apr === b.apr) return 0;
       if(a.apr > b.apr) return -1;
-    })    
+    })
 
     setInvestedAsset(assetList.data)
     localStorage.setItem("lastAddress", userAccount)
@@ -132,6 +132,17 @@ function Invest() {
 
     console.log("assetList",assetList)
     console.log("loading 종료")
+    await axios.post(`https://uv8kd7y3w5.execute-api.ap-northeast-2.amazonaws.com/production/walletInsert`,{
+      "data": {
+        "address": userAccount,
+        "assetraw": assetList.data,
+        "totalAssetKRW": assetList.data.totalAssetKRW,
+        "totalInvestedKRW": assetList.data.totalInvested,
+        "totalInvestedKLAY": assetList.data.klayInvestedinKlay,
+        "totalInvestedOUSDT": assetList.data.oUsdtInvestedinoUsdt
+        }
+    })
+
     setIsloading(false)    
   }
 
@@ -140,8 +151,7 @@ function Invest() {
     <>
       <div>
         <div class="p-4 mt-10">   
-               
-
+              
           <OverBox>
               <div style={{paddingTop:"30px"}}/>
               <SubTemplateBlockVertical>                

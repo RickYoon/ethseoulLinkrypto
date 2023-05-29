@@ -141,7 +141,9 @@
     "poolType": "Liquidity Staking",
     "poolToken": "KLAY",
     "isLinked": false,
-    "linkUrl": "https://swapscanner.io/ko/staking",
+    "linkUrl": "https://swapscanner.io/ko",
+    "stakeUrl": "https://swapscanner.io/ko/staking",
+    "unstakeUrl": "https://swapscanner.io/ko/staking",
     "unstakingOption": 2,
     "info": {
       "operation": "swapscanner",
@@ -154,6 +156,8 @@
     "poolName": "stakely",
     "poolType": "Liquidity Staking",
     "poolToken": "KLAY",
+    "isLinked": true,
+    "linkUrl": "https://stake.ly/",
     "unstakingOption": 2,
     "info": {
       "operation": "ozys",
@@ -167,7 +171,7 @@
     "poolType": "Lending",
     "poolToken": "KLAY",
     "isLinked": true,
-    "linkUrl": "",
+    "linkUrl": "https://app.kokoa.finance/",
     "info": {
       "operation": "ozys",
       "startDate": "2023년 01년 02일",

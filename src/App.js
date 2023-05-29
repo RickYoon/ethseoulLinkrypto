@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import TopNav from "component/topNav"
+import ScrollToTop from "./component/scrollTop"
 
 import Landing from "pages/Landing"
 import Invest from "pages/Invest"
@@ -18,6 +19,7 @@ function App() {
   return (
     <>
       <Router>
+        <ScrollToTop />
         <Routes>
             <Route path="/" element={<TopNav />} />
             <Route path="/invest" element={<TopNav />} />

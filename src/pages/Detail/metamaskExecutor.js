@@ -184,7 +184,6 @@ const metamaskDepositExecutor = async (accountAddress, targetContract, amount) =
 
     return web3Return
 
-
 }
 
 const metamaskWithdrawalExecutor = async (accountAddress, targetContract, amount, balance) => {
@@ -272,17 +271,57 @@ async function klaystationDeposit (addr, contAddr, amount) {
 }
 
 async function stakelyDeposit (addr, contAddr, amount) {
+
     const web3 = new Web3(window.ethereum);
+
     const protocolABI = {name: 'stake',type: 'function', inputs: []}
     const abiInput =[]
     const data = await web3.eth.abi.encodeFunctionCall(protocolABI,abiInput)
+
+    const getGasPrice = await web3.eth.getGasPrice()
+
+    var myContract = await new web3.eth.Contract([protocolABI], contAddr, {
+        from: addr,
+        gasPrice: getGasPrice
+    });
+
+    // console.log("myContract",myContract)
+    
+    // const myContract = new web3.eth.Contract([protocolABI],contAddr)
+    // console.log("myContract",myContract)
+
+    const estimateGas = await myContract.methods.stake().estimateGas({
+        from: addr,
+        to: contAddr,
+        data: data,
+        value: amount * 1e+18,
+      })
+
+      console.log("estimateGas",estimateGas)
+
+    // myContract.methods.stake().estimateGas(function(error, estimated_gas){
+    //     console.log(estimated_gas);
+    // });
+
+    // myContract.methods.stake().estimateGas({
+    //     from:addr,
+    //     to: contAddr,
+        // data: data,
+        // value: 1,
+    //   })
+
+
+    //  console.log("gasEstimate",gasEstimate)
+
     return {
         from: addr,
         to: contAddr,
         data,
         value: amount * 1e+18,
-        gas: 800000
+        gas: 900000
     }
+    
+
 }
 
 async function bifiOusdtWithdrawal (addr, contAddr, amount, balance) { // flag 가 full calculation 모드를 위함이라는데 잘 모르겠음.
@@ -477,6 +516,11 @@ async function klayswapDeposit (addr, contAddr, amount) {
 
 
 async function stakelyWithdrawal (addr, contAddr, amount) {
+
+    if(amount === undefined){
+        amount = 0;
+    }
+    
     const web3 = new Web3(window.ethereum);
     const amountBN = web3.utils.toWei(amount.toString(),'ether');
     const protocolABI = {name: 'unstake',type: 'function', inputs: [{"name": "uint256","type": "uint256"}]}
@@ -486,7 +530,7 @@ async function stakelyWithdrawal (addr, contAddr, amount) {
         from: addr,
         to: contAddr,
         data,
-        gas: 1000000
+        gas: 3000000
     }
 }
 
