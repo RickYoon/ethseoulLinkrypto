@@ -160,37 +160,39 @@ useEffect(() => {
 
 }, [userAccount])
 
-// useEffect(() => {
-
-//   reArrage()
-
-// }, [sortstate])
-
 const loadAsset = async () => {
 
-  console.log("loading 시작")
-  setIsloading(true)
-  const time = Date.now();
+  try {
+    
+    console.log("loading 시작")
+    setIsloading(true)
+    const time = Date.now();
 
-  const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
+    const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
 
-  console.log("assetList.data.klayProtocolCategory",assetList.data.klayProtocolCategory)
-  assetList.data.klayProtocolCategory.sort(function(a,b){
-    if(a.apr < b.apr) return 1;
-    if(a.apr === b.apr) return 0;
-    if(a.apr > b.apr) return -1;
-  })
-  console.log("assetList.data.klayProtocolCategory after",assetList.data.klayProtocolCategory)
+    console.log("assetList.data.klayProtocolCategory",assetList.data.klayProtocolCategory)
+    assetList.data.klayProtocolCategory.sort(function(a,b){
+      if(a.apr < b.apr) return 1;
+      if(a.apr === b.apr) return 0;
+      if(a.apr > b.apr) return -1;
+    })
+    console.log("assetList.data.klayProtocolCategory after",assetList.data.klayProtocolCategory)
 
-  setInvestedAsset(assetList.data)
-  localStorage.setItem("lastAddress", userAccount)
-  localStorage.setItem("assetList", JSON.stringify(assetList.data))
-  localStorage.setItem("assetTimestamp", time)
+    setInvestedAsset(assetList.data)
+    localStorage.setItem("lastAddress", userAccount)
+    localStorage.setItem("assetList", JSON.stringify(assetList.data))
+    localStorage.setItem("assetTimestamp", time)
 
-  // console.log("assetList",assetList)
-  // console.log("loading 종료")
-  // initialArrange()
-  setIsloading(false)
+    // console.log("assetList",assetList)
+    // console.log("loading 종료")
+    // initialArrange()
+    setIsloading(false)
+    
+  } catch (error) {
+    
+    console.log("asset loading error")
+    
+  }
 
 }
 
@@ -399,11 +401,6 @@ const loadAsset = async () => {
                           :
                           <></>
                         ))}
-                        {/* <li>
-                          <div class="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                            풀규모순
-                          </div>
-                        </li> */}
                       </ul>
                   </div>
 
@@ -467,10 +464,20 @@ const loadAsset = async () => {
                           <div class="">
                             <div class="">
                             <div class="mt-2 flex items-center text-sm text-gray-500">
-                            <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
+                              {/* <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                              </svg> */}
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-1.5 w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                              </svg>
 
+                                <TransScaleToken data={Number(res.tvlKLAY.toFixed(0))}/>
+                              </div>
+                            
+                            <div class="mt-2 flex items-center text-sm text-gray-500">
+                              <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                              </svg>
                                 <TransScale data={Number(res.tvlKRW.toFixed(0))}/>
                               </div>
 
@@ -538,6 +545,22 @@ const loadAsset = async () => {
   </div>
     </>
   );
+}
+
+function TransScaleToken(props) {
+
+  return (
+    <>
+      풀 토큰 :   
+      {props.data > 100000000 ?
+        " " + (props.data / 100000000).toFixed(2) + " 억 KLAY"
+        : props.data >  10000 ?
+        " " + (props.data / 10000).toFixed(2) + " 만 KLAY"
+        :
+        " " + props.data + " KLAY"
+      }
+    </>
+  )
 }
 
 function TransScale(props) {

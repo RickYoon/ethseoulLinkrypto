@@ -156,16 +156,9 @@ export const connectKaikas = () => async dispatch => {
             await klaytn.enable()
             klaytn.on('accountsChanged', () => console.log("account changed"))
             const accounts = klaytn.selectedAddress
-            // console.log("accounts",accounts)
-            // console.log("klaytn",klaytn)
-
-            // setAccountinfo(klaytn.selectedAddress)
-            // setWalletInfo("kaikas")
             dispatch(walletKaikasConnect({ account: accounts }));
             localStorage.setItem("address", klaytn.selectedAddress)
             localStorage.setItem("wallet", "kaikas")
-            // setShowModal(false)
-            // setShowManageModal(false)
         } catch (error) {
             console.log(error)
         }
