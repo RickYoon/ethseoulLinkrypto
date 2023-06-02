@@ -1,0 +1,29 @@
+{
+  "id": "5f1eea81",
+  "onEvent": false,
+  "balanceETH": 12.5,
+  "dailyIncomeETH": 0.252,
+  "datailAPR": 4.95,
+  "stepNumber": 2,
+  "investStep": [
+    {
+      "protocol": "Lido",
+      "action": "Deposit ETH",
+      "result": "Get reward bearing token, stETH",
+      "balance": 2.1,
+      "balanceTokenname": "ETH",
+      "balanceTokenAddress": "",
+      "contractAddress": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+      "linkURL": "https://stake.lido.fi/"
+    },
+    {
+      "protocol": "Curve",
+      "action": "Add Liquidity in stETH/ETH pool",
+      "result": "Get LP Token",
+      "balance": 3.5,
+      "balanceTokenname": "stETH",
+      "balanceTokenAddress": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
+      "linkURL": "https://curve.fi/#/ethereum/pools/steth/deposit"
+    }
+  ]
+}

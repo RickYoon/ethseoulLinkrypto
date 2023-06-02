@@ -1,0 +1,74 @@
+{
+  "isInvested": true,
+  "totalAssetKRW": 452145.53739476326,
+  "totalInvested": 310387.30662224465,
+  "totalDailyIncome": 68.1942025185548,
+  "totalApr": 8.019298272904514,
+  "totalTvl": 130910039300.63458,
+  "klayInvestedinKlay": 104.14945008500958,
+  "klayInvestedinKRW": 26631.014386736948,
+  "klayDailyIncomeKlay": 0.014573098673705664,
+  "klayDailyIncomeKRW": 3.726341330866538,
+  "KlayTotalApr": 5.107257898683967,
+  "oUsdtInvestedinoUsdt": 213.51113035026913,
+  "oUsdtInvestedinKRW": 283756.2922355077,
+  "oUsdtDailyIncomeoUsdt": 0.04850854867395656,
+  "oUsdtDailyIncomeKRW": 64.46786118768827,
+  "oUsdtTotalApr": 8.292598253284376,
+  "klayProtocolCategorySummary": [
+    { "Swapscanner": 42.35517802925896 },
+    { "Kokoa Finance": 28.804760827362212 },
+    { "hashed-Ozys (Klaystation)": 4.810395058169489 },
+    { "Kleva": 4.803662543483867 },
+    { "Klayswap": 4.803214679693664 },
+    { "Jump (Klaystation)": 2.8900776696786754 },
+    { "Klaymore stakehouse": 2.8860030030332173 },
+    { "Stake.ly": 2.8847007809909013 },
+    { "Klaybank": 1.9213726028957898 },
+    { "FSN (Klaystation)": 1.9203173884908145 },
+    { "BiFi": 0.9601587226970119 },
+    { "Hankyung (Klaystation)": 0.9601586942454072 }
+  ],
+  "oUsdtProtocolCategorySummary": [{ "BiFi": 100 }],
+  "totalInvestCategory": {
+    "klayStaking": 8.579930241525016,
+    "ousdtStaking": 91.42006975847498
+  },
+  "klayStaking": {
+    "Min": 0.295245360324739,
+    "Max": 7.560209552012428,
+    "balance": 11.254324491664521
+  },
+  "oUsdtStaking": { "Min": 1.77, "Max": 15.8, "balance": 104.5 },
+  "klayAprStatus": {
+    "myStatus": 5.107257898683967,
+    "maxApr": 7.560209552012428
+  },
+  "oUsdtAprStatus": { "myStatus": 8.292598253284376, "maxApr": 15.8 },
+  "klayProtocolCategory": [
+    {
+      "category": "LP staking",
+      "combination": "Frax -> Curve",
+      "poolName": "Frax Finance",
+      "contractAddress": "0xf50782a24afcb26acb85d086cf892bfffb5731b5",
+      "investedKLAY": 0,
+      "tvlKLAY": 64004258.307619326,
+      "tvlKRW": 16365888849.25826,
+      "apr": 7.560209552012428,
+      "liqToken": "X",
+      "unStakingOption": ["스왑", "7일대기"]
+    },
+    {
+      "category": "Liqudity Staking",
+      "combination": "Frax",
+      "poolName": "Frax Finance",
+      "contractAddress": "0xf50782a24afcb26acb85d086cf892bfffb5731b5",
+      "investedKLAY": 0,
+      "tvlKLAY": 64004258.307619326,
+      "tvlKRW": 16365888849.25826,
+      "apr": 6.560209552012428,
+      "liqToken": "X",
+      "unStakingOption": ["스왑", "7일대기"]
+    }
+  ]
+}

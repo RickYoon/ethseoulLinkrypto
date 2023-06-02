@@ -42,23 +42,16 @@ function Landing() {
 
 
 <section className="pt-20 bg-gradient-to-r from-green-100 to-blue-200" >
-{/* <section className="pt-20" > */}
 <div style={{marginTop:"30px"}}></div>
     <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
-        {/* <NavLink to="#" className="inline-flex justify-between items-center py-1 px-1 pr-4 mb-7 text-sm text-gray-700 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700" role="alert"> */}
-            {/* <span className="text-xs bg-primary-600 rounded-full text-white px-4 py-1.5 mr-3">New</span> <span className="text-sm font-medium"> 05. 23. 베타서비스 시작! </span>  */}
-            {/* <svg className="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg> */}
-        {/* </NavLink> */}
         <h1 className="mb-10 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl text-black">Linkrypto</h1>
         <p className="mb-10 text-lg font-normal text-black lg:text-xl sm:px-16 xl:px-48">가장 쉽고 친절한 크립토 에셋 관리 서비스</p>
-        {/* <div className="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4"> */}
-            <NavLink to="/invest" className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
+            <NavLink to="/manage" className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
                 바로 시작하기
                 <svg className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
             </NavLink>
             <div style={{marginTop:"30px"}}></div>
             <p className="mb-2 pt-5 font-medium text-gray-500 md:text-lg dark:text-gray-400"> Connected </p>
-    {/* <div class="p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="statistics" role="tabpanel" aria-labelledby="statistics-tab"> */}
             <dl class="grid grid-cols-3 gap-0 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-3 dark:text-white sm:p-8">
                 <div class="flex flex-col">
                     <dt class="mb-2 text-3xl font-extrabold">15개</dt>
@@ -73,22 +66,6 @@ function Landing() {
                     <dd class="text-gray-500 dark:text-gray-400">풀 TVL</dd>
                 </div>
             </dl>
-        {/* </div> */}
-        {/* </div> */}
-        {/* <div className="px-4 mx-auto text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">
-            <span className="font-semibold text-gray-400 uppercase">CONNECTED TO</span>
-            <div className="flex flex-wrap justify-center items-center mt-8 text-gray-500 sm:justify-between">
-              <NavLink to="https://klaytn.foundation/" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800 dark:hover:text-gray-400">
-                <img src={klaytn} width={120} height={150} style={{color:"gray"}} /> 
-              </NavLink>
-              <NavLink to="https://www.wemix.com/ko" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800 dark:hover:text-gray-400">
-                <img src={wemix} width={130} height={150} style={{color:"gray"}}/> 
-              </NavLink>
-              <NavLink to="https://sui.io/" className="mr-5 mb-5 lg:mb-0 hover:text-gray-800 dark:hover:text-gray-400">
-                <img src={sui} width={80} height={150} style={{color:"gray"}}/> 
-              </NavLink>
-            </div>
-        </div>  */}
     </div>
 </section>
 
@@ -188,24 +165,6 @@ function Landing() {
     <div style={{height:"100px"}}/>
     </section>
 
-    <section className="bg-white">
-        <div style={{height:"50px"}}/>
-        <h2 className="mb-5 text-2xl text-black tracking-tight font-extrabold text-gray-900 dark:text-white" style={{textAlign:"center", paddingTop:"50px"}}>
-            커뮤니티와 함께 더 좋은 투자처를 찾아보세요.
-        </h2>
-        <div style={{height:"50px"}}/>
-        <div style={{margin: "auto", display:"block", width:"50px"}}>
-        <a href="https://open.kakao.com/o/gnLZ0Llf">
-          <img
-            src={kakaotalk}
-            alt="Product screenshot"
-            width={100}
-          />
-          </a>
-          </div>
-        <div style={{height:"50px"}}/>
-    </section>
-    <div style={{height:"50px"}}/>
     <section className="bg-gray-100 pt-5 pb-5" style={{textAlign:"center"}}>
         {/* <h2 className="mb-5 text-2xl text-black tracking-tight font-extrabold text-gray-900 dark:text-white" style={{textAlign:"center", paddingTop:"50px"}}> */}
             Contact : linkryptocontact@gmail.com

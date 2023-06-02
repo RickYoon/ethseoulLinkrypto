@@ -1,3 +1,3 @@
-# 자산관리 서비스
+# Linkrypto for Eth - Seoul
 
-2023년 5월 9일 : klaytn, ousdt 자산 조회 페이지 오픈
+2023년 6월 2 ~ 4일 : Eth seoul @ lotte tower

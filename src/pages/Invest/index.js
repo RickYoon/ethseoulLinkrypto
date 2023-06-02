@@ -8,6 +8,7 @@ import icons from "assets/tokenIcons"
 import react, {useState, useEffect} from "react";
 import { useDispatch , useSelector } from 'react-redux';
 import axios from 'axios';
+import ethereum from '../../assets/ci/ethereum.png';
 
 
 function Invest() {
@@ -157,7 +158,7 @@ function Invest() {
               <SubTemplateBlockVertical>                
 
                 <Wrappertitle>
-                    <Title>투자하기                    
+                    <Title>Overview          
                     </Title>
                 </Wrappertitle>
                 
@@ -167,7 +168,7 @@ function Invest() {
 
                   <div class="block p-6 bg-blue-500 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                     <div style={{justifyContent:"space-between"}} class="flex flex-row mb-2 text-1xl font-bold tracking-tight text-white dark:text-white">
-                      <div>전체자산</div>                      
+                      <div>Total Asset</div>                      
                       <div>
                       {isloading ? 
                           <><ProductSkeleton width="80%" height="30px" /></>   // 로딩 중이고, 자산이 로딩 안된 상황
@@ -181,16 +182,21 @@ function Invest() {
                     </div>
                     <hr />
                     <div style={{marginTop:"10px"}}></div>
-                    <h5 class="mb-2 text-1xl font-bold tracking-tight text-white dark:text-white">투자현황</h5>
+                    <h5 class="mb-2 text-1xl font-bold tracking-tight text-white dark:text-white">Investment State</h5>
                     <div style={{textAlign:"right"}}>
                     <h5 class="mb-2 text-2xl font-bold tracking-tight text-white dark:text-white">
                         {isloading ? 
-                          <><ProductSkeleton width="100%" height="30px" /></>   // 로딩 중이고, 자산이 로딩 안된 상황
+                          <><ProductSkeleton width="100%" height="70px" /></>   // 로딩 중이고, 자산이 로딩 안된 상황
                           :
                           userAccount !== "" ?
-                            <div> <span style={{fontSize:"15px", marginRight:"15px"}}>총 투자금 </span>{Number(investedAsset.totalInvested.toFixed(0)).toLocaleString()} 원 </div>
+                            <div> 
+                              <span style={{fontSize:"15px", marginRight:"15px"}}>
+                                총 투자금 
+                              </span>
+                              {Number(investedAsset.totalInvested.toFixed(0)).toLocaleString()} 원 
+                            </div>
                             :  
-                            "지갑을 연결해주세요"
+                            "Connect Wallet"
                         } 
                     </h5>
                     </div>
@@ -222,89 +228,33 @@ function Invest() {
 
                   </div>
                   <div style={{marginTop:"20px"}}></div>
-                  <div className="border border-blue-200 rounded-lg p-6">
-                  <h5 class="mb-2 text-1xl font-bold tracking-tight text-black dark:text-white">투자 내용</h5>
-                  {/* <div style={{marginTop:"10px"}}></div> */}
-                  <div class="mb-1 p-0 text-base font-medium dark:text-blue-500" style={{fontSize:"14px"}}>토큰 별</div>
 
-                  <div class="w-full bg-gray-200 rounded-full h-2.5 mb-5 dark:bg-gray-700">
-
-                        {isloading ? 
-                            <>
-                              <div class="bg-blue-400 h-2.5 rounded-full" style={{width:"0%"}}>
-                                {/* <div class="bg-blue-600 h-2.5 rounded-full" style={{width:`${investedAsset.totalInvestCategory.klayStaking}%`}}> */}
-                                {/* </div> */}
-                              </div>
-                            </> 
-                            :
-                            userAccount !== "" ?
-                            <>  
-                              <div class="bg-blue-400 h-2.5 rounded-full" style={{width:"100%"}}>
-                                <div class="bg-blue-600 h-2.5 rounded-full" style={{width:`${investedAsset.totalInvestCategory.klayStaking}%`}}>
-                                </div>
-                              </div>
-                            </>
-                            :
-                            <>
-                            </>
-                        } 
-
-                        {
-                        userAccount !== "" ?
-                        <span class="flex items-center text-sm font-medium text-gray-900 dark:text-white pt-2 gap-1">
-                            <span class="pt-1 w-2.5 h-2.5 bg-blue-600 rounded-full mr-1.5"></span>
-                            {isloading ? 
-                            <><ProductSkeleton width="20%"/></> 
-                            :
-                            userAccount !== "" ?
-                            <> Klay ({`${investedAsset.totalInvestCategory.klayStaking.toFixed(1)}`}%)</>
-                            :
-                            ""
-                            }
-                            
-                            <span class="pt-1 w-2.5 h-2.5 bg-blue-400 rounded-full ml-1.5 mr-1.5"></span>
-                            {isloading ? 
-                            <><ProductSkeleton width="20%"/></> 
-                            :
-                            userAccount !== "" ?
-                            <> oUSDT ({`${investedAsset.totalInvestCategory.ousdtStaking.toFixed(1)}`}%)</>
-                            :
-                            ""
-                            }
-                        </span>
-                        :
-                        <></>
-                        }
-                  </div>
-                </div>
-
-                  <div style={{marginTop:"30px"}}></div>
 
 
             <div class="w-full max-w-md bg-white rounded-lg dark:bg-gray-800 dark:border-gray-700">
                 <div class="flex items-center justify-between mb-4">
-                    <h5 class="mb-2 text-1xl font-bold tracking-tight text-black dark:text-white">투자상품</h5>
+                    <h5 class="mb-2 mt-5 text-1xl font-bold tracking-tight text-black dark:text-white">Investments</h5>
                 </div>
                 <div class="flow-root">
                         <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700" style={{marginLeft:"15px"}}>
                             <li class="py-3 sm:py-4">
                                 <div class="flex items-center space-x-4">
                                     <div class="flex-shrink-0">
-                                        <img class="w-8 h-8 rounded-full" src={icons["KLAY"]} alt=""/>
+                                    <img class="w-6 h-6 rounded-full" src={ethereum} alt=""/>
                                         {/* <img class="w-8 h-8 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Neil image" /> */}
                                     </div>
                                     <div class="flex-1 min-w-0">
                                       {/* <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">190 KLAY 예치중 (5.6%)</span> */}
                                         <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                            KLAY 예치
+                                            ETH Deposit
                                         </p>
                                         
                                         <p class="text-sm text-gray-500 truncate dark:text-gray-400">
                                         {isloading ? 
-                                          <>연 수익율: <ProductSkeleton width="70px" height="10px"/></> 
+                                          <>APR : <ProductSkeleton width="70px" height="10px"/></> 
                                           :
                                           userAccount !== "" ?
-                                          <> 연 수익율: {investedAsset.klayStaking.Min.toFixed(1)} ~ {investedAsset.klayStaking.Max.toFixed(1)} %
+                                          <> APR : {investedAsset.klayStaking.Min.toFixed(1)} ~ {investedAsset.klayStaking.Max.toFixed(1)} %
                                           </>
                                           :
                                           <></>
@@ -316,7 +266,7 @@ function Invest() {
                                           <> <ProductSkeleton width="50px" height="10px"/></> 
                                           :
                                           userAccount !== "" ?
-                                          <> 투자가능 : {investedAsset.klayStaking.balance.toFixed(1)} 개
+                                          <> Available : {investedAsset.klayStaking.balance.toFixed(1)} ETH
                                           </>
                                           :
                                           <></>
@@ -327,12 +277,12 @@ function Invest() {
 
                                   {isloading ? 
                                         <div class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-gray-500 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                          예치
+                                          deposit
                                         </div>
                                         :
                                         userAccount === "" ?
                                         <div class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-gray-500 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                          예치
+                                          deposit
                                         </div>
                                         :
                                         <Link to={`/manage/klay_node`}>
@@ -343,57 +293,7 @@ function Invest() {
                                     {/* <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">시작하기</a> */}
                                 </div>
                             </li>
-                            <li class="py-3 sm:py-4">
-                                <div class="flex items-center space-x-4">
-                                    <div class="flex-shrink-0">
-                                        <img class="w-8 h-8 rounded-full" src={icons["oUSDT"]} alt=""/>
-                                        {/* <img class="w-8 h-8 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Neil image" /> */}
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                    {/* <span class="bg-gray-100 text-black-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">미예치</span> */}
-                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                            oUSDT 예치
-                                        </p>
-                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        {isloading ? 
-                                          <>연 수익율: <ProductSkeleton width="70px" height="10px"/></> 
-                                          :
-                                          userAccount !== "" ?
-                                          <> 연 수익율: {investedAsset.oUsdtStaking.Min.toFixed(1)} ~ {investedAsset.oUsdtStaking.Max.toFixed(1)} %</>
-                                          :
-                                          <></>
-                                        }                                          
-                                        </p>
-                                    </div>
-                                    <div class="inline-flex items-center text-xs font-medium text-center text-black bg-blue-000 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"> 
-                                    {isloading ? 
-                                          <> <ProductSkeleton width="50px" height="10px"/></> 
-                                          :
-                                          userAccount !== "" ?
-                                          <> 투자가능 : {investedAsset.oUsdtStaking.balance.toFixed(1)} 개
-                                          </>
-                                          :
-                                          <></>
-                                        }      
-                                    </div>
 
-                                    {isloading ? 
-                                        <div class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-gray-500 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                          예치
-                                        </div>
-                                        :
-                                        userAccount === "" ?
-                                        <div class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-gray-500 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                          예치
-                                        </div>
-                                        :
-                                        <Link to={`/stable/ousdt`}>
-                                          <div class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">예치</div>
-                                        </Link>
-                                    }
-
-                                </div>
-                            </li>
                             {/* <li class="py-3 sm:py-4">
                                 <div class="flex items-center space-x-4">
                                     <div class="flex-shrink-0">

@@ -1,536 +1,414 @@
+import hashed from 'assets/ci/hashed.png'
 import 'App.css'; 
-import axios from 'axios';
+import {Link} from "react-router-dom"
 import styled, { keyframes } from 'styled-components';
+import WalletTokenDetailTable from "pages/Portfolio/WalletTokenDetailTable.js"
 import react, {useState, useEffect} from "react";
 import { useDispatch , useSelector } from 'react-redux';
-import { useParams, useNavigate } from "react-router-dom";
-import {metamaskDepositExecutor, metamaskWithdrawalExecutor, metamaskSwapExecutor, metamaskOusdtDepositExecutor,metamaskOusdtWithdrawalExecutor} from './metamaskExecutor.js';
-import {kaikasKlayDepositExecutor, kaikasKlayWithdrawalExecutor} from './kaikasExecutor.js';
-import icons from "assets/tokenIcons"
-import Swal from 'sweetalert2'
+import { Bar } from "react-chartjs-2";
+
+import icons from "assets/protocols"
+import { useParams } from "react-router-dom";
+import { BsBoxArrowLeft } from "react-icons/bs";
+import axios from 'axios';
+
+import { WsV2 } from "chainrunner-sdk";
+import BigNumber from "bignumber.js";
 
 import poolInfos from "./poolInfos.json"
+import testData from "./testData.json"
+
+import ethereum from '../../assets/ci/ethereum.png';
+import Lido from "../../assets/tokens/blog.svg"
+import fraxfinance from "../../assets/tokens/fraxfinance.png"
+import curve from "../../assets/tokens/curve.png"
+
+// import Rocketpool from "../../../assets/tokens/rocketpool.png"
+// import swell from "../../../assets/tokens/swell.svg"
+// import etherfi from "../../../assets/tokens/etherfi.svg"
+// import ankr from "../../../assets/tokens/ankr.png"
+// import stakewise from "../../../assets/tokens/stakewise.png"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  // Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
 
-function Detail() {
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  // Title,
+  Tooltip,
+  Legend
+);
+
+ChartJS.defaults.font.family = "Inter";
+ChartJS.defaults.scale.grid.drawOnChartArea = false;
+ChartJS.defaults.scale.grid.drawBorder = false;
+ChartJS.defaults.scale.ticks.color = "#abadc6";
+ChartJS.defaults.datasets.bar.borderRadius = 4;
+ChartJS.defaults.datasets.bar.maxBarThickness = 28;
+
+
+function Manage() {
 
   const { id } = useParams();  
   const [showModal, setShowModal] = useState(false);
   const [isloading, setIsloading] = useState(false);
-  const [selection, setSelection] = useState("예치");
-  const [depositAmount, setDepositAmount] = useState()
-  const [withdrawalAmount, setWithdrawalAmount] = useState()
+  const [isDropdown, setIsDropdown] = useState(true);
+  const [selection, setSelection] = useState("deposit");
+  const [sortstate, setSortstate] = useState(0);
+  const sortStates = ["APR","Balance"]
 
   const userAccount = useSelector(state => state.account) // 지갑주소
   const walletProvider = useSelector(state => state.walletProvider) // 프로바이더
 
-  const [detailAsset, setDetailAsset] = useState({
-    "poolName": "",
-    "category": "",
-    "contractAddress": "",
-    // "TokenName": 0,
-    "investedToken": 0,
-    "availableToken": 0,
-    "tvlToken": 0,
-    "tvlKRW": 0,
-    "apr": 0
+  // nodeklay => "클레이 노드 스테이킹"
+  const [investedAsset, setInvestedAsset] = useState({
+      "id": "5f1eea81",
+      "onEvent": false,
+      "balanceETH": 12, 
+      "dailyIncomeETH": 5, // 추가정보 
+      "datailAPR": 4, // 추가됨
+      "stepNumber": 2,
+      "investStep": [
+        {
+          "protocol" : "frax finance",
+          "action" : "deposit ETH",
+          "result" : "get Base Token, frxETH",
+          "balance" : 2
+        },
+        {
+          "protocol" : "frax finance",
+          "action" : "stake frxETH",
+          "result" : "get reward bearing token, sfrxETH",
+          "balance" : 2
+        }
+      ]
   })
 
-
   useEffect(() => {
-    loadAsset()
-  }, [userAccount])
 
+    // console.log("userAccount",userAccount)
+    // console.log("localStorage.getItem.address", localStorage.getItem("address") === "")
+
+    // 1) local storage address check
+    // null 이면 아예 접속한 적이 없는 것. // "" 이면 접속했엇으나 지갑해제한것.
+
+    // 이 상황이라면 아무 것도 안한다. 
+    
+    // address 가 바뀌었다.
+    if(userAccount === ""){ // 아무것도 아닌 거라면,
+      // target 주소가 아무 것도 아닌 것이라면 아무 것도 안한다.
+      setInvestedAsset({
+        "id": "5f1eea81",
+        "onEvent": false,
+        "balanceETH": 12, 
+        "dailyIncomeETH": 5, // 추가정보 
+        "datailAPR": 4, // 추가됨
+        "stepNumber": 2,
+        "investStep": [
+          {
+            "protocol" : "frax finance",
+            "action" : "deposit ETH",
+            "result" : "get Base Token, frxETH",
+            "balance" : 2
+          },
+          {
+            "protocol" : "frax finance",
+            "action" : "stake frxETH",
+            "result" : "get reward bearing token, sfrxETH",
+            "balance" : 2
+          }
+        ]
+    })
+
+    } else if (userAccount !== undefined || userAccount !== "") { // 지갑 주소가 로딩 되었는데,
+
+      loadAsset() 
+    }
+
+  }, [userAccount])
 
   const loadAsset = async () => {
 
-    console.log("loading 시작")
-    setIsloading(true)
-
-    console.log("userAccount",userAccount)
-    if(userAccount !== ""){
-      const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/managePool?userAddr=${userAccount}&contractAddress=${id}`)
-      console.log("assetList",assetList.data)
-      setDetailAsset(assetList.data)
-    } else {
-      setDetailAsset({
-        "poolName": "",
-        "category": "",
-        "contractAddress": "",
-        "investedToken": 0,
-        "availableToken": 0,
-        "tvlToken": 0,
-        "tvlKRW": 0,
-        "apr": 0
-      })
-    }
-    console.log("loading 종료")
-    setIsloading(false)    
-  }
-
-  const requestWithdrawal = async () => {
-
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 5000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-      }
-    })
-
-    setIsloading(true)
-
-    let trxReturn = {}
-
-    if(walletProvider === "metamask"){
-
-      if(poolInfos[id].poolToken === "KLAY"){
-        trxReturn = await metamaskWithdrawalExecutor(userAccount, id, withdrawalAmount, detailAsset.investedToken)
-      } else {
-        trxReturn = await metamaskOusdtWithdrawalExecutor(userAccount, id, withdrawalAmount, detailAsset.investedToken)
-      }
-
-      setIsloading(false)
-
-      Toast.fire({
-        icon: 'success',
-        title: '인출이 성공적으로 실행되었습니다.',
-        html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
-      })
-
-      await loadAsset()
-
-
-    } else {
-
-
-      if(poolInfos[id].poolToken === "KLAY"){
-        trxReturn = await kaikasKlayWithdrawalExecutor(userAccount, id, withdrawalAmount, detailAsset.investedToken)
-      } else {
-        // trxReturn = await metamaskOusdtWithdrawalExecutor(userAccount, id, withdrawalAmount, detailAsset.investedToken)
-      }
-
-      setIsloading(false)
-
-      Toast.fire({
-        icon: 'success',
-        title: '인출이 성공적으로 실행되었습니다.',
-        html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
-      })
-
-      await loadAsset()
-
-    }
-  
-  }
-
-  const requestSwap = async () => {
-
-    if(id === "0xf80f2b22932fcec6189b9153aa18662b15cc9c00"){
-      var link = 'https://app.pangeaswap.com/swap?from=0xF80F2b22932fCEC6189b9153aA18662b15CC9C00&to=0x0000000000000000000000000000000000000000';
-      window.open(link);
-    }
-
-  }
-
-  const requestDeposit = async () => {
-
-    if(walletProvider === "metamask"){
-
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' })
-
-      if(chainId === "0x2019"){
+    try {
       
-        const Toast = Swal.mixin({
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-          }
-        })
-
-        setIsloading(true)
-
-        let trxReturn = {}
-
-        
-        if(poolInfos[id].poolToken === "KLAY"){
-          trxReturn = await metamaskDepositExecutor(userAccount, id, depositAmount)
-        } else {
-          trxReturn = await metamaskOusdtDepositExecutor(userAccount, id, depositAmount)
-        }
-
-        setIsloading(false)
-
-        Toast.fire({
-          icon: 'success',
-          title: '예치가 성공적으로 실행되었습니다.',
-          html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
-        })
-
-        await loadAsset()
-
-      } else {
-  
-        await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x2019' }], // chainId must be in hexadecimal numbers
-        });
-  
-      }
-
-    } else if (walletProvider === "kaikas") {
-
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      })
-
+      console.log("loading 시작")
       setIsloading(true)
+      const time = Date.now();
 
-      let trxReturn = {}
-      
-      if(poolInfos[id].poolToken === "KLAY"){
-        trxReturn = await kaikasKlayDepositExecutor(userAccount, id, depositAmount)
-      } else {
-        // trxReturn = await metamaskOusdtDepositExecutor(userAccount, id, depositAmount)
+      // const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
+      const assetList = {
+        data : testData
       }
+      setInvestedAsset(assetList.data)
+      localStorage.setItem("lastAddress", userAccount)
+      localStorage.setItem("assetList", JSON.stringify(assetList.data))
+      localStorage.setItem("assetTimestamp", time)
 
+      // console.log("assetList",assetList)
+      // console.log("loading 종료")
+      // initialArrange()
       setIsloading(false)
-
-      Toast.fire({
-        icon: 'success',
-        title: '예치가 성공적으로 실행되었습니다.',
-        html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
-      })
-
-      await loadAsset()
-
-
+      
+    } catch (error) {
+      
+      console.log("asset loading error")
+      
     }
+
   }
+  
+  function sortHandler(e) {
+    setSortstate(sortStates.indexOf(e.target.innerText))
+    setIsDropdown(true)
 
+    if(sortStates.indexOf(e.target.innerText) === 0){
+      investedAsset.klayProtocolCategory.sort(function(a,b){
+        if(a.apr < b.apr) return 1;
+        if(a.apr === b.apr) return 0;
+        if(a.apr > b.apr) return -1;
+      })    
+    } else if(sortStates.indexOf(e.target.innerText) === 1){
+      investedAsset.klayProtocolCategory.sort(function(a,b){
+        if(a.investedKLAY < b.investedKLAY) return 1;
+        if(a.investedKLAY === b.investedKLAY) return 0;
+        if(a.investedKLAY > b.investedKLAY) return -1;
+      })    
+    } else if(sortStates.indexOf(e.target.innerText) === 2){
+      investedAsset.klayProtocolCategory.sort(function(a,b){
+        if(a.tvlKLAY < b.tvlKLAY) return 1;
+        if(a.tvlKLAY === b.tvlKLAY) return 0;
+        if(a.tvlKLAY > b.tvlKLAY) return -1;
+      })    
+    }
 
-  const Backbutton = () => {
-    const navigate = useNavigate();
-    const onClickBtn = () => {
-      navigate(-1);
-    };
-    return (
-      <button onClick={onClickBtn} class="inline-flex items-center px-4 py-2 text-sm font-medium border border-blue-200 text-center text-blue-500 bg-white rounded-lg hover:bg-blue-600 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-      돌아가기
-      </button>
-    )
+    setInvestedAsset({...investedAsset})
   }
 
   const selectionDeposit = () => {
-    setSelection("예치")
+    setSelection("deposit")
   }
 
   const selectionWithdrawler = () => {
-    setSelection("인출")
-  }
-
-  const maxDepositHandler = () => {
-    setDepositAmount(detailAsset.availableToken)
-  }
-
-  const maxWithdrawerHandler = () => {
-    setWithdrawalAmount(detailAsset.investedToken)
+    setSelection("withdraw")
   }
   
 
+
   return (
     <>
-      <div>
-        <div class="p-4 mt-10">
-          <OverBox>
-          <div style={{paddingTop:"50px"}}/>
-          <SubTemplateBlockVertical>
-            <div>
-              <div class="px-4 sm:px-0">
-                <Wrappertitle>
-                  <ManageTitle>
-                    <Title>
-                    <h3 class="text-base font-semibold leading-7 text-gray-900">예치 하기</h3>
-                    </Title>
-                    <Backbutton class="inline-flex items-center px-4 py-2 text-sm font-medium border border-blue-200 text-center text-blue-500 bg-white rounded-lg hover:bg-blue-600 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"/>
-                  </ManageTitle> 
-                </Wrappertitle>
 
+      <div style={{backgroundColor:"rgb(249,250,251)"}}>
+
+        <div class="p-4 mt-10">
+        <div style={{paddingTop:"30px"}}/>
+          <OverBox style={{display:"flex", flexDirection:"row"}}>
+              <SubTemplateBlockVertical style={{backgroundColor:"rgb(249,250,251)"}}>
+              <Wrappertitle>
+                <ManageTitle>
+                  <Title>
+                    Staking Info
+                  </Title>
+                </ManageTitle>
+              </Wrappertitle>
               <div style={{paddingTop:"20px"}}/>
 
-                  <div class="block p-6 bg-blue-500 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <h5 class="mb-2 text-1xl font-bold tracking-tight text-white dark:text-white">{poolInfos[id].poolName} 투자현황</h5>
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-white dark:text-white">
+                  <div class="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <h5 class="mb-2 text-1xl font-medium tracking-tight text-black dark:text-black">Invested ETH</h5>
+                    <h5 class="mb-2 text-2xl font-medium tracking-tight text-black dark:text-black">
                       {isloading ? 
-                          <><ProductSkeleton width="20%" height="30px" /></> 
+                          <><ProductSkeleton width="20%" height="30px" /></>   
                           :
                           userAccount !== "" ?
-                            <> {detailAsset.investedToken.toFixed(2)} {poolInfos[id].poolToken}  </>
+                            <> {investedAsset.balanceETH.toFixed(2)} ETH  </>
+                            // <> 12.5 ETH  </>
                             :  
-                            "지갑을 연결해주세요"
+                            "Connect Wallet"
                       }
                       
-                      <span className="text-xs text-gray mx-5">
-                      {isloading ? 
-                          <><ProductSkeleton width="5%" height="30px" /></> 
+                    </h5>
+                    <h5 class="mb-2 text-1xl font-medium tracking-tight text-black dark:text-black">
+                    {isloading ? 
+                          <><ProductSkeleton width="50%" height="30px" /></>   
                           :
                           userAccount !== "" ?
-                            <> 
-                            {/* {Number(investedAsset.klayInvestedinKRW.toFixed(0)).toLocaleString()} 원   */}
+                            <>
+                            Daily Income : {investedAsset.dailyIncomeETH.toFixed(4)} ETH 
+                            <br/>
+                            APR : {investedAsset.datailAPR.toFixed(2)} %  
                             </>
                             :  
                             ""
-                      }
-                        
-                      </span>
-                    </h5>
+                    }
 
+                    </h5>
                   </div>
                   <div style={{marginTop:"20px"}}></div>
-                  <div className="border border-gray-200 rounded-lg p-5">
-                  <div style={{marginTop:"10px"}}></div>
-
-              {selection === "예치" ? 
-
-              <ul class="text-sm font-medium text-center text-gray-400 divide-x divide-blue-200 border border-blue-300 rounded-lg flex dark:divide-blue-700 dark:text-blue-400">
-                  <li class="w-full">
-                      <a onClick={selectionDeposit} href="#" class="inline-block w-full p-2 text-blue-600 bg-blue-100 rounded-l-lg focus:ring-1 focus:ring-blue-300 active focus:outline-none dark:bg-blue-700 dark:text-white">
-                        예치
-                      </a>
-                  </li>
-                  <li class="w-full">
-                      <a onClick={selectionWithdrawler} href="#" class="inline-block w-full p-2 bg-white rounded-r-lg hover:text-blue-700 hover:bg-blue-50 focus:ring-1 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:bg-blue-800 dark:hover:bg-blue-700">
-                        인출
-                      </a>
-                  </li>
-              </ul>
-              :
-              <ul class="text-sm font-medium text-center text-gray-400 divide-x divide-blue-200 border border-blue-300 rounded-lg flex dark:divide-blue-700 dark:text-blue-400">
-              <li class="w-full">
-                  <a onClick={selectionDeposit} href="#" class="inline-block w-full p-2 text-gray bg-white rounded-l-lg focus:ring-1 focus:ring-blue-300 active focus:outline-none dark:bg-blue-700 dark:text-white">
-                    예치
-                  </a>
-              </li>
-              <li class="w-full">
-                  <a onClick={selectionWithdrawler} href="#" class="inline-block w-full p-2 text-blue-600 bg-blue-100 rounded-r-lg hover:text-blue-700 hover:bg-blue-50 focus:ring-1 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:bg-blue-800 dark:hover:bg-blue-700">
-                    인출
-                  </a>
-              </li>
-              </ul>
-              }
-
-          <div style={{marginTop:"20px"}}></div>
-              <div className="p-2">
-              <h5 class="mb-2 text-1xl font-medium tracking-tight text-black dark:text-white">
-                {selection === "예치" ? 
-                  "예치량" : 
-                  "인출량"
-                }
-              </h5>
-              <div style={{marginTop:"10px"}}></div>
-              <div class="items-center">   
               
-                  <label for="voice-search" class="sr-only">Search</label>
-                  
-                  <div class="relative w-full">
-                      {selection === "예치" ? 
-                      <>
-                        <div class="relative">
-                            <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                            </div>
-                            <input type="number" value={depositAmount} onChange={e => setDepositAmount(e.target.value)} class="block p-4 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-100 dark:placeholder-gray-100 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={`잔액 : ${detailAsset.availableToken} ${poolInfos[id].poolToken}`} required  />
-                            <button onClick={maxDepositHandler}  class="text-white absolute right-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Max</button>
-                        </div>
-                      </>
-                      :
-                      <>
-                        <div class="relative">
-                          <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                          </div>
-                          <input type="number" value={withdrawalAmount} onChange={e => setWithdrawalAmount(e.target.value)} class="block p-4 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-100 dark:placeholder-gray-100 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={`잔액 : ${detailAsset.investedToken} ${poolInfos[id].poolToken}`} required />
-                            <button onClick={maxWithdrawerHandler}  class="text-white absolute right-2.5 bottom-2.5 bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Max</button>
-                          </div>
-                      </>
-                    }
-                  </div>              
-              </div>
 
-          <div style={{marginTop:"20px"}}></div>
-            <div style={{textAlign:"right"}}>
-              <div style={{marginTop:"30px"}}></div>
-                {selection === "예치" ? 
-                  poolInfos[id].isLinked ? 
-                  <>
-                    <button onClick={requestDeposit} style={{marginTop:"10px", marginBottom:"10px", width:"100%", height:"50px", fontSize:"15px", fontWeight:"800"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        <span style={{width:"30px"}}>예치하기</span>
-                    </button>
-                  </>
-                  :
-                    <>
-                    {/* <button onClick={requestDeposit} style={{width:"100%"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-white bg-gray-300 rounded-lg hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        <span style={{width:"30px"}}>예치하기 (준비중)</span>
-                    </button> */}
-                    <button onClick={()=>window.open(poolInfos[id].stakeUrl)} style={{marginTop:"0px", width:"100%", height:"50px"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-blue-600 bg-blue-200 rounded-lg hover:text-white hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                      <span style={{width:"30px"}}> {poolInfos[id].poolName} 로 이동</span>
-                    </button>
-                    </>
-                  :
-                  poolInfos[id].unstakingOption === 2 ?
-                    poolInfos[id].isLinked  ? 
-                    <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
-                      <button onClick={requestSwap} style={{marginTop:"10px", marginBottom:"10px", width:"30%", height:"50px", fontSize:"15px", fontWeight:"700"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                          <span style={{width:"30px"}}>스왑 (즉시)</span>
-                      </button>
-                      <button onClick={requestWithdrawal} style={{marginTop:"10px", marginBottom:"10px", width:"65%", height:"50px", fontSize:"15px", fontWeight:"700"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                          <span style={{width:"30px"}}>인출 (7일 소요)</span>
-                      </button>
-                    </div>
-                    :
-                    <button onClick={()=>window.open(poolInfos[id].unstakeUrl)} style={{marginTop:"0px", width:"100%", height:"50px"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-blue-600 bg-blue-200 rounded-lg hover:text-white hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    <span style={{width:"30px"}}> {poolInfos[id].poolName} 로 이동</span>
-                  </button>
-                    // <button onClick={()=>window.open(poolInfos[id].linkUrl)} style={{width:"100%"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    //   <span style={{width:"30px"}}>서비스 이동</span>
-                    // </button>
-
-                  :
-                  poolInfos[id].unstakingOption === 1 ?
-                  <button onClick={requestWithdrawal} style={{width:"100%"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    <span style={{width:"30px"}}>인출하기</span>
-                  </button>
-                  :
-                  <button onClick={requestWithdrawal} style={{width:"100%"}} type="submit" class="py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                      <span style={{width:"30px"}}>인출 (7일 소요)</span>
-                  </button>
-                }
-              </div>
-            </div>
-          </div>
-          </div>
-
-          <div style={{marginTop:"30px"}}></div>
-          <div class="block p-6 border border-gray-200 rounded-lg dark:hover:bg-gray-700">
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
-            <h5 style={{marginTop:"10px"}} class="mb-2 text-1xl font-medium tracking-tight text-black dark:text-white">
-              풀 상세정보
-              </h5>
-
-              <button onClick={()=>window.open(poolInfos[id].linkUrl)} type="submit" class="ml-5 py-2.5 px-3 text-sm font-medium text-blue-600 bg-gray-100 rounded-lg hover:bg-blue-800 hover:text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                <span> 서비스로 이동 &#8594;
-
-
-                </span>
-              </button>
-              </div>
-
-            <div class="mt-6 border-t border-gray-100">
-              <dl class="divide-y divide-gray-100">
-                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt class="text-sm font-medium leading-6 text-gray-900">이름</dt>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    {poolInfos[id].poolName}
-                  </dd>
-                </div>
-                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt class="text-sm font-medium leading-6 text-gray-900">타입</dt>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                  {poolInfos[id].poolType}
-                  </dd>
-                </div>
-                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt class="text-sm font-medium leading-6 text-gray-900">상태</dt>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    풀 규모 : {TransScale(detailAsset.tvlKRW)}
-                  </dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-1 sm:mt-0"></dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    예치된 토큰 : {Number(detailAsset.tvlToken.toFixed(0)).toLocaleString()} {poolInfos[id].poolToken}
-                  </dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-1 sm:mt-0"></dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    연 수익율 : {detailAsset.apr.toFixed(2)} %
-                  </dd>
-                </div>
-                {/* <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt class="text-sm font-medium leading-6 text-gray-900">정보</dt>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    운영사 : {poolInfos[id].info.operation}
-                  </dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-1 sm:mt-0"></dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    시작일자 : {poolInfos[id].info.startDate}
-                  </dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-1 sm:mt-0"></dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    사고이력 : {poolInfos[id].info.hackingHistory}
-                  </dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-1 sm:mt-0"></dd>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    오딧여부 : {poolInfos[id].info.auditPerformed}
-                  </dd>
-                </div> */}
-              </dl>
-            </div>
-          </div>
-          
-          </div>
             </SubTemplateBlockVertical>
+            <RightSubTemplateBlockVertical style={{backgroundColor:"rgb(249,250,251)"}}>
+            {isloading ? 
+              <>
+                <ProductSkeleton width="90%" height="50px" style={{marginLeft:"20px"}}/>
+              </> : 
+              userAccount !== "" ?
+              <>
+              <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}> 
+              
+              <Title>
+                Deposit / Withdraw
+              </Title>
+                <div style={{position:"relative"}} >
+                <Link to="/manage">
+                  <button style={{width:"80px", height:"40px", display:"flex", alignItems:"center", justifyContent:"center"}} id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-blue-600 border border-blue-200 bg-white hover:bg-blue-400 font-medium rounded-lg text-sm px-2 py-1.5 text-center inline-flex items-center" type="button">
+                    Return
+                  </button>
+                </Link>
+                
+
+                </div>
+              </div>
+
+              <div style={{marginTop:"20px"}}></div>
+
+              {selection === "deposit" ? 
+
+                <ul class="text-sm font-medium text-center text-gray-400 divide-x divide-blue-200 border border-blue-300 rounded-lg flex dark:divide-blue-700 dark:text-blue-400">
+                    <li class="w-full">
+                        <a onClick={selectionDeposit} href="#" class="inline-block w-full p-2 text-blue-600 bg-blue-100 rounded-l-lg focus:ring-1 focus:ring-blue-300 active focus:outline-none dark:bg-blue-700 dark:text-white">
+                        deposit
+                        </a>
+                    </li>
+                    <li class="w-full">
+                        <a onClick={selectionWithdrawler} href="#" class="inline-block w-full p-2 bg-white rounded-r-lg hover:text-blue-700 hover:bg-blue-50 focus:ring-1 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:bg-blue-800 dark:hover:bg-blue-700">
+                          withdraw
+                        </a>
+                    </li>
+                  </ul>
+                  :
+                  <ul class="text-sm font-medium text-center text-gray-400 divide-x divide-blue-200 border border-blue-300 rounded-lg flex dark:divide-blue-700 dark:text-blue-400">
+                  <li class="w-full">
+                      <a onClick={selectionDeposit} href="#" class="inline-block w-full p-2 text-gray bg-white rounded-l-lg focus:ring-1 focus:ring-blue-300 active focus:outline-none dark:bg-blue-700 dark:text-white">
+                      deposit
+                      </a>
+                  </li>
+                  <li class="w-full">
+                      <a onClick={selectionWithdrawler} href="#" class="inline-block w-full p-2 text-blue-600 bg-blue-100 rounded-r-lg hover:text-blue-700 hover:bg-blue-50 focus:ring-1 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:bg-blue-800 dark:hover:bg-blue-700">
+                      withdraw
+                      </a>
+                  </li>
+                  </ul>
+                }
+
+              <div style={{marginTop:"20px"}}></div>
+
+              <ul role="list">
+
+              {investedAsset.investStep.map((res)=>(
+                <>
+                <div className="border border-blue-200 rounded-lg" style={{backgroundColor:"white"}}>
+                  <li>
+                    <div class="flex items-center space-x-4">
+                      <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                          <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
+
+                          <div style={{padding:"5px", margin:"10px"}}>
+                            <ol class="mt-3 ml-5 relative border-gray-200 dark:border-gray-700">                  
+                              <li class="mb-0 ml-6">            
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                                  <img src={icons[res.protocol]} alt=""/>
+                                </span>
+                                <h3 class="flex items-center mb-1 text-base font-semibold text-gray-900 dark:text-white">
+                                  {res.action}
+                                  <a href={`${res.linkURL}`} target='_blank'>
+                                  <svg class="ml-3 w-4 h-4 dark:text-blue" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
+                                  </svg>
+                                  
+                                  </a>
+                                  
+                                </h3>
+                                <p class="pb-2 text-base font-normal text-gray-500 dark:text-gray-400">
+                                  {res.result}
+                                </p>
+                              </li>
+                            </ol>                          
+                          </div>
+
+                          <div style={{marginTop:"30px", marginBottom:"15px", marginRight:"20px"}}>
+                            <div style={{display:"flex", flexDirection:"row"}}>   
+                                <div style={{width:"200px"}}>
+                                    <input type="text" id="voice-search" class="bg-white border border-blue-300 text-blue-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-300 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                      placeholder={`${res.balanceTokenname} Balance : ${res.balance} `} required 
+                                    />
+                                </div> 
+                                <button type="submit" class="ml-5 py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                <span style={{width:"10px"}}>deposit</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          </div>
+                        </p>
+                      </div>
+                    </div>
+                  </li>
+                </div>
+                <div style={{marginTop:"20px"}}></div>
+                </>
+              ))}
+
+                </ul>
+                </>
+                :
+                <></>
+              }
+            </RightSubTemplateBlockVertical>
           </OverBox>
         </div>
       </div>
       
-    <div id="crypto-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-      <div class="relative w-full max-w-md max-h-full">
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" data-modal-hide="crypto-modal">
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>  
-                <span class="sr-only">Close modal</span>
-            </button>
-            <div class="px-6 py-4 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-base font-semibold text-gray-900 lg:text-xl dark:text-white">
-                    Connect wallet
-                </h3>
-            </div>
-            <div class="p-6">
-                <p class="text-sm font-normal text-gray-500 dark:text-gray-400">Connect with one of our available wallet providers or create a new one.</p>
-
-            </div>
-      </div>
-    </div>
-  </div>
     </>
   );
 }
 
-function TransScale(props) {
-
-  // console.log("props",props)
+function TransScaleToken(props) {
 
   return (
     <>
-      {props > 100000000 ?
-        " " + (props / 100000000).toFixed(2) + " 억원"
-        : props >  10000 ?
-        " " + (props / 10000).toFixed(2) + " 만원"
+      풀 토큰 :   
+      {props.data > 100000000 ?
+        " " + (props.data / 100000000).toFixed(2) + " 억 KLAY"
+        : props.data >  10000 ?
+        " " + (props.data / 10000).toFixed(2) + " 만 KLAY"
         :
-        " " + props
+        " " + props.data + " KLAY"
+      }
+    </>
+  )
+}
+
+function TransScale(props) {
+
+  return (
+    <>
+      풀 규모 :   
+      {props.data > 100000000 ?
+        " " + (props.data / 100000000).toFixed(2) + " 억원"
+        : props.data >  10000 ?
+        " " + (props.data / 10000).toFixed(2) + " 만원"
+        :
+        " " + props.data
       }
     </>
   )
@@ -550,31 +428,7 @@ const ManageTitle = styled.div`
       font-size: 12px;
     }
 `
-/* style={{width:"460px", display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}> */
 
-
-const ChartCover = styled.div`
-  height: 40px;
-  border: 2px solid white;
-  border-radius: 10px;
-  overflow: hidden;
-  /* New code below: */
-  display: grid;
-  grid-template-columns: ${props=> props.a}fr ${props=> props.b}fr ${props=> props.c}fr;
-  /* grid-template-columns: ${props=> props.a}fr ${props=> props.b}fr ${props=> props.c}fr; */
-`
-
-const AppleChart = styled.div`
-  background: #111539;
-  color: white;
-  font-family: sans-serif;
-  font-weight: bold;
-  font-size: 12px;
-  line-height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
 
 const Title = styled.h1`
   font-weight: 600;
@@ -597,11 +451,9 @@ const Wrappertitle = styled.div`
 `
 const OverBox = styled.div`
 
+margin: 10px auto; 
+width: 1200px;
   /* position: relative;
-  margin: 10px auto; 
-  width: calc(100% - (230px));
-  width: -moz-calc(100% - (230px));
-  width: -webkit-calc(100% - (230px));
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
   height: 100vh;
@@ -617,11 +469,44 @@ const OverBox = styled.div`
 `
 
 
+const RightSubTemplateBlockVertical = styled.div`
+     /* width: 900px; */
+     /* max-width: 500px; */
+    /* margin: 10px auto; */
+    /* max-width: 460px; */
+    width:100%;
+    margin-left: 50px;
+    /* padding-bottom: 10px; */
+    /* position: relative; */
+    /* padding:15px; */
+    /* display:flex; */
+    /* flex-direction:column; */
+
+    /* padding: 20px 25px !important;
+    background: #fff; */
+
+    color: rgba(0, 0, 0, 0.87);
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    min-width: 0px;
+    overflow-wrap: break-word;
+    background-color: rgb(255, 255, 255);
+    background-clip: border-box;
+    /* border: 1px solid rgba(0, 0, 0, 0.125); */
+    /* border-radius: 0.75rem; */
+    /* box-shadow: rgb(0 0 0 / 10%) 0rem 0.25rem 0.375rem -0.0625rem, rgb(0 0 0 / 6%) 0rem 0.125rem 0.25rem -0.0625rem; */
+    /* overflow: visible; */
+    
+  @media screen and (max-width: 500px){
+      width: 100%;
+      /* margin: 10px 10px; */
+      font-size: 12px;
+    }
+`;
 
 const SubTemplateBlockVertical = styled.div`
      /* width: 900px; */
      /* max-width: 500px; */
-    margin: 10px auto;
+    /* margin: 10px auto; */
     max-width: 460px;
     /* padding-bottom: 10px; */
     position: relative;
@@ -650,38 +535,6 @@ const SubTemplateBlockVertical = styled.div`
     }
 `;
 
-const SubTemplateBlockSub = styled.div`
-     /* width: 900px; */
-     /* max-width: 500px; */
-    margin: 10px auto;
-    width: 1136px;
-    padding-bottom: 10px;
-    position: relative; /* 추후 박스 하단에 추가 버튼을 위치시키기 위한 설정 */
-    padding:15px;
-    display:flex;
-    flex-direction:column;
-
-    padding: 20px 25px !important;
-
-    color: rgba(0, 0, 0, 0.87);
-    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    min-width: 0px;
-    overflow-wrap: break-word;
-    background-color: rgb(255, 255, 255);
-    background-clip: border-box;
-    border: 0.1px solid rgba(0, 0, 0, 0.125);
-    border-radius: 0.75rem;
-    box-shadow: rgb(0 0 0 / 10%) 0rem 0.25rem 0.375rem -0.0625rem, rgb(0 0 0 / 6%) 0rem 0.125rem 0.25rem -0.0625rem;
-    overflow: visible;
-    
-  @media screen and (max-width: 500px){
-      width: 100%;
-      /* margin: 10px 10px; */
-      font-size: 12px;
-    }
-`;
-
-
 const skeletonKeyframes = keyframes`
   0% {
     background-position: -200px 0;
@@ -708,5 +561,5 @@ export const ProductSkeleton = styled.div`
 
 
 
-export default Detail;
+export default Manage;
 

@@ -106,12 +106,8 @@ function Topnav () {
                 <div class="flex items-center">
                     <div class="flex items-center ml-3">
                     <div>
-                    <button onClick={openChainModal} type="button" data-modal-target="crypto-modal" data-modal-toggle="crypto-modal" class="text-gray-900 ml-1 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700">
-                        {chain === "ethereum" ? 
-                            <img class="w-4 h-4 rounded-full" src={ethereum} alt=""/>
-                            :
-                            <img class="w-4 h-4 rounded-full" src={icons["KLAY"]} alt=""/>
-                        }
+                    <button type="button" data-modal-target="crypto-modal" data-modal-toggle="crypto-modal" class="text-gray-900 ml-1 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700">
+                    <img class="w-4 h-4 rounded-full" src={ethereum} alt=""/>
                     </button>
                     
                     {userAccount === "" ?
@@ -197,9 +193,9 @@ function Topnav () {
                                 <div class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
                                     <img class="w-6 h-6 rounded-full" src={ethereum} alt=""/>
                                         <span class="flex-1 ml-3 whitespace-nowrap">Ethereum</span>
-                                        <span class="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium text-gray-500 bg-red-100 rounded dark:bg-gray-700 dark:text-gray-400">
+                                        {/* <span class="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium text-gray-500 bg-red-100 rounded dark:bg-gray-700 dark:text-gray-400">
                                             점검중
-                                        </span>
+                                        </span> */}
 
                                         {/* {chain === "ethereum" ?
                                         <span class="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium text-gray-500 bg-red-100 rounded dark:bg-gray-700 dark:text-gray-400">
@@ -229,7 +225,7 @@ function Topnav () {
                     
                     <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                     <h3 className="text-2xl font-semibold">
-                        지갑연결
+                        Connect Wallet
                     </h3>
                     <button onClick={() => dispatch(walletConnectModalClose())}>
                         <span className="bg-transparent text-black opacity-1 h-6 w-6 text-2xl block outline-none focus:outline-none">
@@ -240,7 +236,7 @@ function Topnav () {
                     
                     <div class="p-6">
                     
-                    <p class="text-sm font-normal text-gray-500 dark:text-gray-400">지갑을 연결하세요. (조회, 관리 가능) </p>
+                    <p class="text-sm font-normal text-gray-500 dark:text-gray-400">Select Wallet Provider</p>
                         <ul class="my-4 space-y-3">
                             <li>
                                 <a href="#" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
@@ -249,36 +245,10 @@ function Topnav () {
                                     {/* <span class="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium text-gray-500 bg-gray-200 rounded dark:bg-gray-700 dark:text-gray-400">Popular</span> */}
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                                <svg width="22" height="20" viewBox="0 0 84 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_18_550)">
-                                        <path d="M62.2792 39.2422L57.2156 49.2888C54.6738 54.3322 49.5099 57.517 43.8737 57.517H10.1773C4.57122 57.4969 0 62.0883 0 67.6742C0 73.2601 4.57122 77.8514 10.1773 77.8514H78.9264C82.9953 77.8514 85.4065 73.3003 83.1159 69.9347L62.2892 39.2422H62.2792Z" fill="#99B3FF"/>
-                                        <path d="M73.8127 0H15.3513C6.87191 0 0 6.87191 0 15.3513V67.6742C0 62.0883 4.57122 57.497 10.1773 57.497H43.8837C49.5199 57.497 54.6839 54.3122 57.2257 49.2687L78.3337 7.33405C80.0316 3.96843 77.5902 0 73.8127 0Z" fill="#3366FF"/>
-                                        <path d="M45.5115 31.6168C48.9273 31.6168 51.7002 29.4567 51.7002 26.7843C51.7002 24.1119 48.9273 21.9519 45.5115 21.9519C42.0956 21.9519 39.3228 24.1119 39.3228 26.7843C39.3228 29.4567 42.0956 31.6168 45.5115 31.6168Z" fill="#DAFF86"/>
-                                        </g>
-                                        <defs>
-                                        <clipPath id="clip0_18_550">
-                                        <rect width="84" height="77.8514" fill="white"/>
-                                        </clipPath>
-                                        </defs>
-                                    </svg>
-                                    <span class="flex-1 ml-3 whitespace-nowrap" onClick={conKaikas}>Kaikas</span>
-                                </a>
-                            </li>
-                        </ul>
-                    <p class="text-sm font-normal text-gray-500 dark:text-gray-400">주소 불러오기 (조회만 가능) </p>
-                    
-                    <div class="mt-3"></div>
 
-                        <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">0x123...</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            </div>
-                            <input onChange={(e)=>setTempAccountInfo(e.target.value)} value={tempAccountInfo} type="search" id="search" class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="0x123..." />
-                            <button onClick={conAddress} class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">입력</button>
-                        </div>
+                        </ul>
+                    
+
                     
                     </div>
                 </div>
@@ -296,7 +266,7 @@ function Topnav () {
                     
                     <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                     <h3 className="text-2xl font-semibold">
-                        지갑관리
+                        Manage Wallet
                     </h3>
                     <button onClick={() => dispatch(walletManageModalClose())}>
                         <span className="bg-transparent text-black opacity-1 h-6 w-6 text-2xl block outline-none focus:outline-none">
@@ -307,7 +277,7 @@ function Topnav () {
                     
                     <div class="p-6">
                     
-                    <p class="text-sm font-normal text-gray-500 dark:text-gray-400">지갑변경</p>
+                    <p class="text-sm font-normal text-gray-500 dark:text-gray-400">Connection State</p>
                         <ul class="my-4 space-y-3">
                             <li>
                                 <a href="#" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
@@ -323,38 +293,13 @@ function Topnav () {
                                     }
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                                    {/* <svg aria-hidden="true" class="h-5" viewBox="0 0 292 292" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M145.7 291.66C226.146 291.66 291.36 226.446 291.36 146C291.36 65.5541 226.146 0.339844 145.7 0.339844C65.2542 0.339844 0.0400391 65.5541 0.0400391 146C0.0400391 226.446 65.2542 291.66 145.7 291.66Z" fill="#3259A5"/><path d="M195.94 155.5C191.49 179.08 170.8 196.91 145.93 196.91C117.81 196.91 95.0204 174.12 95.0204 146C95.0204 117.88 117.81 95.0897 145.93 95.0897C170.8 95.0897 191.49 112.93 195.94 136.5H247.31C242.52 84.7197 198.96 44.1797 145.93 44.1797C89.6904 44.1797 44.1104 89.7697 44.1104 146C44.1104 202.24 89.7004 247.82 145.93 247.82C198.96 247.82 242.52 207.28 247.31 155.5H195.94Z" fill="white"/></svg> */}
-                                    <svg width="22" height="20" viewBox="0 0 84 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_18_550)">
-                                        <path d="M62.2792 39.2422L57.2156 49.2888C54.6738 54.3322 49.5099 57.517 43.8737 57.517H10.1773C4.57122 57.4969 0 62.0883 0 67.6742C0 73.2601 4.57122 77.8514 10.1773 77.8514H78.9264C82.9953 77.8514 85.4065 73.3003 83.1159 69.9347L62.2892 39.2422H62.2792Z" fill="#99B3FF"/>
-                                        <path d="M73.8127 0H15.3513C6.87191 0 0 6.87191 0 15.3513V67.6742C0 62.0883 4.57122 57.497 10.1773 57.497H43.8837C49.5199 57.497 54.6839 54.3122 57.2257 49.2687L78.3337 7.33405C80.0316 3.96843 77.5902 0 73.8127 0Z" fill="#3366FF"/>
-                                        <path d="M45.5115 31.6168C48.9273 31.6168 51.7002 29.4567 51.7002 26.7843C51.7002 24.1119 48.9273 21.9519 45.5115 21.9519C42.0956 21.9519 39.3228 24.1119 39.3228 26.7843C39.3228 29.4567 42.0956 31.6168 45.5115 31.6168Z" fill="#DAFF86"/>
-                                        </g>
-                                        <defs>
-                                        <clipPath id="clip0_18_550">
-                                        <rect width="84" height="77.8514" fill="white"/>
-                                        </clipPath>
-                                        </defs>
-                                    </svg>
 
-                                    <span class="flex-1 ml-3 whitespace-nowrap" onClick={conKaikas}>Kaikas</span>
-                                    {walletProvider === "kaikas" ?
-                                    <span class="inline-flex items-center justify-center px-2 py-0.5 ml-3 text-xs font-medium text-gray-500 bg-green-100 rounded dark:bg-gray-700 dark:text-gray-400">
-                                        연결됨
-                                    </span> :
-                                    <></>
-                                    }
-
-                                </a>
-                            </li>
                         </ul>
-                    <p class="text-sm font-normal text-gray-500 dark:text-gray-400">연결해제</p>
+                    <p class="text-sm font-normal text-gray-500 dark:text-gray-400">disconnect</p>
                     
                     <div class="mt-3"></div>
                         <button class="w-full items-center p-3 text-white font-bold text-gray-900 rounded-lg bg-primary-100 hover:bg-primary-700 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                            <div style={{textAlign:"center"}} onClick={walletDisconnect}>해제</div>
+                            <div style={{textAlign:"center"}} onClick={walletDisconnect}>disconnect</div>
                         </button>                    
                     </div>
                 </div>

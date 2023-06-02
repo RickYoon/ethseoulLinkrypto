@@ -5,6 +5,7 @@ import styled, { keyframes } from 'styled-components';
 import WalletTokenDetailTable from "pages/Portfolio/WalletTokenDetailTable.js"
 import react, {useState, useEffect} from "react";
 import { useDispatch , useSelector } from 'react-redux';
+import { Bar } from "react-chartjs-2";
 
 import icons from "assets/tokenIcons"
 import { useParams } from "react-router-dom";
@@ -15,6 +16,44 @@ import { WsV2 } from "chainrunner-sdk";
 import BigNumber from "bignumber.js";
 
 import poolInfos from "./poolInfos.json"
+import testData from "./testData.json"
+
+import ethereum from '../../assets/ci/ethereum.png';
+import Lido from "../../assets/tokens/blog.svg"
+import fraxfinance from "../../assets/tokens/fraxfinance.png"
+import curve from "../../assets/tokens/curve.png"
+import {Card} from "./CardComponent.jsx"
+// import Rocketpool from "../../../assets/tokens/rocketpool.png"
+// import swell from "../../../assets/tokens/swell.svg"
+// import etherfi from "../../../assets/tokens/etherfi.svg"
+// import ankr from "../../../assets/tokens/ankr.png"
+// import stakewise from "../../../assets/tokens/stakewise.png"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  // Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  // Title,
+  Tooltip,
+  Legend
+);
+
+ChartJS.defaults.font.family = "Inter";
+ChartJS.defaults.scale.grid.drawOnChartArea = false;
+ChartJS.defaults.scale.grid.drawBorder = false;
+ChartJS.defaults.scale.ticks.color = "#abadc6";
+ChartJS.defaults.datasets.bar.borderRadius = 4;
+ChartJS.defaults.datasets.bar.maxBarThickness = 28;
 
 
 function Manage() {
@@ -24,141 +63,126 @@ function Manage() {
   const [isloading, setIsloading] = useState(false);
   const [isDropdown, setIsDropdown] = useState(true);
   const [sortstate, setSortstate] = useState(0);
-  const sortStates = ["수익률순","내 보유량순","풀규모순"]
+  const sortStates = ["APR","Balance"]
 
   const userAccount = useSelector(state => state.account) // 지갑주소
   const walletProvider = useSelector(state => state.walletProvider) // 프로바이더
 
   // nodeklay => "클레이 노드 스테이킹"
   const [investedAsset, setInvestedAsset] = useState({
-    "isInvested": false,
-    "totalInvested": 0,
-    "totalDailyIncome": 0,
-    "totalApr": 0,
-    "klayInvestedinKlay": 0,
-    "klayInvestedinKRW": 0,
-    "klayDailyIncomeKlay": 0,
-    "klayDailyIncomeKRW": 0,
-    "KlayTotalApr": 0,
-    "investCategory": {
-        "klayStaking": 0,
-        "ousdtStaking": 0
-    },
-    "klayStaking": {
-        "Min": 0,
-        "Max": 0,
-        "balance": 0
-    },
-    "ousdtStaking": {
-        "Min": 0,
-        "Max": 0,
-        "balance": 0
-    },
-    "klayAprStatus": {
-      "myStatus": 0,
-      "maxApr": 0
-    },
-    "klayProtocolCategorySummary":[
-      {"":0},{"":0}
+    "isInvested": true,
+    "totalAssetETH": 150,
+    "investedETH": 104.15,
+    "investedUSD": 23000,
+    "dailyIncomeETH": 0.023,
+    "dailyIncomeUSD": 3.7,
+    "averageAPR": 5.11,
+    "ethProtocolCategorySummary": [
+      { "frxETH + ETH LP": 42 },
+      { "frxETH Staking": 58 }
     ],
-    "klayProtocolCategory": [
+    "ethAprStatus": {
+      "myStatus": 5.107257898683967,
+      "maxApr": 7.560209552012428
+    },
+    "ethPerformanceChartValue": [95, 100, 90],
+    "ethPerformanceChartDate": ["06-01", "06-02", "06-03"],
+    "myStakingList": [
       {
-        "poolName": "hashed-Ozys (Klaystation)",
-        "category": "노드 스테이킹",
-        "investedKLAY": 0,
-        "tvlKLAY": 0,
-        "tvlKRW": 0,
-        "apr":0,
-        "liqToken": "sKLAY",
-        "unStakingOption": [
-            "스왑",
-            "7일대기"
-        ]
+        "depositedETH": 0.5,
+        "protocolName": "fraxfinance"
       }
-  ]
-})
+    ],
+    StakingDetailList : [{
+      "id": "baef2dc8",
+      "onEvent": false,
+      "stepNumber": 2, 
+      "category" : "Liquidity Staking",
+      "balanceETH" : 10,
+      "boostCRV" : 0,
+      "boostBAL" : 0,
+      "netAPR": 6.7,
+      "protocolName" : "Frax",
+      "investStep": [
+          {
+              "protocol" : "Frax",
+              "action" : "deposit ETH",
+              "result" : "get Base Token, frxETH"
+          },
+          {
+              "protocol" : "Curve",
+              "action" : "provide frxETH + ETH LP",
+              "result" : "reward CRV + CVX + FXS Token"
+          }
+      ]
+    }]
+  })
 
 useEffect(() => {
 
-  // console.log("userAccount",userAccount)
-  // console.log("localStorage.getItem.address", localStorage.getItem("address") === "")
+  if(userAccount === ""){
 
-  // 1) local storage address check
-  // null 이면 아예 접속한 적이 없는 것. // "" 이면 접속했엇으나 지갑해제한것.
-
-  // 이 상황이라면 아무 것도 안한다. 
-  
-  // address 가 바뀌었다.
-  if(userAccount === ""){ // 아무것도 아닌 거라면,
-    // target 주소가 아무 것도 아닌 것이라면 아무 것도 안한다.
     setInvestedAsset({
-      "isInvested": false,
-      "totalInvested": 0,
-      "totalDailyIncome": 0,
-      "totalApr": 0,
-      "klayInvestedinKlay": 0,
-      "klayInvestedinKRW": 0,
-      "klayDailyIncomeKlay": 0,
-      "klayDailyIncomeKRW": 0,
-      "KlayTotalApr": 0,
-      "investCategory": {
-          "klayStaking": 0,
-          "ousdtStaking": 0
+      "isInvested": true,
+      "totalAssetETH": 150,
+      "investedETH": 104.15,
+      "investedUSD": 23000,
+      "dailyIncomeETH": 0.023,
+      "dailyIncomeUSD": 3.7,
+      "averageAPR": 5.11,
+      "ethProtocolCategorySummary": [
+        { "frxETH + ETH LP": 42 },
+        { "frxETH Staking": 58 }
+      ],
+      "ethAprStatus": {
+        "myStatus": 5.107257898683967,
+        "maxApr": 7.560209552012428
       },
-      "klayStaking": {
-          "Min": 0,
-          "Max": 0,
-          "balance": 0
-      },
-      "ousdtStaking": {
-          "Min": 0,
-          "Max": 0,
-          "balance": 0
-      },
-      "klayAprStatus": {
-        "myStatus": 0,
-        "maxApr": 0
-      },
-      "klayProtocolCategorySummary":[{"":0},{"":0}],
-      "klayProtocolCategory": [
+      "ethPerformanceChartValue": [95, 100, 90],
+      "ethPerformanceChartDate": ["06-01", "06-02", "06-03"],
+      "myStakingList": [
         {
-          "poolName": "hashed-Ozys (Klaystation)",
-          "category": "노드 스테이킹",
-          "investedKLAY": 0,
-          "tvlKLAY": 0,
-          "tvlKRW": 0,
-          "apr":0,
-          "liqToken": "sKLAY",
-          "unStakingOption": [
-              "스왑",
-              "7일대기"
-          ]
+          "depositedETH": 0.5,
+          "protocolName": "fraxfinance"
         }
-    ]
-  })
+      ],
+      StakingDetailList : [{
+        "id": "baef2dc8",
+        "onEvent": false,
+        "stepNumber": 2, 
+        "category" : "Liquidity Staking",
+        "balanceETH" : 10,
+        "boostCRV" : 0,
+        "boostBAL" : 0,
+        "netAPR": 6.7,
+        "protocolName" : "Frax",
+        "investStep": [
+            {
+                "protocol" : "Frax",
+                "action" : "deposit ETH",
+                "result" : "get Base Token, frxETH"
+            },
+            {
+                "protocol" : "Curve",
+                "action" : "provide frxETH + ETH LP",
+                "result" : "reward CRV + CVX + FXS Token"
+            }
+        ]
+      }]
+    })
 
-  } else if (userAccount !== undefined || userAccount !== "") { // 지갑 주소가 로딩 되었는데,
+  } else if (userAccount !== undefined || userAccount !== "") { 
 
-    console.log("지갑주소가 바뀜", userAccount)
-
-    if(localStorage.getItem("address") === localStorage.getItem("lastAddress")){ // 마지막에 불러온 주소랑 상태 주소가 같은가?
-      console.log("마지막 지갑 주소랑 같음", userAccount)
-
-      const time = Date.now();
-
-      if((time - localStorage.getItem("assetTimestamp")) > 60000){ // 불러온 이력이 있다면 불러온지 1분이 넘었는가?
-        loadAsset() // 그러면 다시 자산을 불러온다.
-
-      } else { // 불러온 이력이 없거나 1분 이내라면 기존 데이터를 불러온다.
-        setInvestedAsset(JSON.parse(localStorage.getItem("assetList"))) 
-      }
-
-    } else { // 그러면 다시 자산을 불러온다.
-      loadAsset() 
-    }
+   
+    loadAsset() 
   }
+  
 
 }, [userAccount])
+
+function delay(ms = 1000) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 const loadAsset = async () => {
 
@@ -167,16 +191,13 @@ const loadAsset = async () => {
     console.log("loading 시작")
     setIsloading(true)
     const time = Date.now();
+    await delay(2000);
 
-    const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
 
-    console.log("assetList.data.klayProtocolCategory",assetList.data.klayProtocolCategory)
-    assetList.data.klayProtocolCategory.sort(function(a,b){
-      if(a.apr < b.apr) return 1;
-      if(a.apr === b.apr) return 0;
-      if(a.apr > b.apr) return -1;
-    })
-    console.log("assetList.data.klayProtocolCategory after",assetList.data.klayProtocolCategory)
+    // const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
+    const assetList = {
+      data : testData
+    }
 
     setInvestedAsset(assetList.data)
     localStorage.setItem("lastAddress", userAccount)
@@ -234,53 +255,93 @@ const loadAsset = async () => {
     setInvestedAsset({...investedAsset})
   }
 
+
+
+const chartOptions = { plugins: { legend: { display: false } } };
+
+  const chartData = {
+    labels: investedAsset.ethPerformanceChartDate,
+    datasets: [
+      {
+        label: "",
+        data: investedAsset.ethPerformanceChartValue,
+        backgroundColor: ["#2563eb"]
+      },
+    ],
+  };
+
+  // ChartJS.defaults.datasets.line.borderColor = "#2563eb";
+  // ChartJS.defaults.datasets.bar.borderColor = "#2563eb";
+  // ChartJS.defaults.datasets.bar.backgroundColor = "#2563eb";
+
+  
+
+
   return (
     <>
 
-      <div>
+      <div style={{backgroundColor:"rgb(249,250,251)"}}>
 
         <div class="p-4 mt-10">
-          <OverBox>
-          <div style={{paddingTop:"30px"}}/>
-
-              {/* <div style={{paddingTop:"20px"}}/> */}
-              <SubTemplateBlockVertical>
-
+        <div style={{paddingTop:"30px"}}/>
+          <OverBox style={{display:"flex", flexDirection:"row"}}>
+              <SubTemplateBlockVertical style={{backgroundColor:"rgb(249,250,251)"}}>
               <Wrappertitle>
                 <ManageTitle>
                   <Title>
-                    KLAY 예치하기
-                    {/* {id} 관리하기 */}
+                    Asset Status
                   </Title>
-                  
-                  <Link to="/invest">
-                    <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium border border-blue-200 text-center text-blue-500 bg-white rounded-lg hover:bg-blue-600 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                      돌아가기
-                    </a>
-                    {/* <BsBoxArrowLeft style={{ marginRight: "10px", verticalAlign: "bottom" }}/> */}
-                  </Link>
                 </ManageTitle>
               </Wrappertitle>
               <div style={{paddingTop:"20px"}}/>
 
-                  <div class="block p-6 bg-blue-500 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <h5 class="mb-2 text-1xl font-bold tracking-tight text-white dark:text-white">투자현황</h5>
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-white dark:text-white">
+                  <div class="block p-6 bg-blue-700 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                  <div style={{justifyContent:"space-between"}} class="flex flex-row mb-2 text-1xl font-bold tracking-tight text-white dark:text-white">
+                      <div>Total Asset</div>                      
+                      <div>
                       {isloading ? 
-                          <><ProductSkeleton width="20%" height="30px" /></>   // 로딩 중이고, 자산이 로딩 안된 상황
+                         <>
+                          <div style={{float:"right"}}> <ProductSkeleton width="80px" height="30px" /> </div>
+                         </>  
                           :
                           userAccount !== "" ?
-                            <> {investedAsset.klayInvestedinKlay.toFixed(2)} KLAY  </>
+                            <div style={{float:"right"}}> {investedAsset.totalAssetETH} ETH </div>
                             :  
-                            "지갑을 연결해주세요"
+                            "-"
+                        }
+                      </div>
+                    </div>
+                    <hr />
+                    {isloading ? 
+                          <>
+                            <hr />
+                            <ProductSkeleton width="80%" height="30px" style={{marginTop:"20px"}}/>
+                          </> 
+                          :
+                          userAccount !== "" ?
+                          <h5 class="mt-2 mb-2 text-1xl font-bold tracking-tight text-white dark:text-white">
+                            Invested 
+                          </h5>    
+                            :  
+                            <br/>
+                        }
+
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-white dark:text-white">
+                      {isloading ? 
+                          <><ProductSkeleton width="20%" height="20px" /></>
+                          :
+                          userAccount !== "" ?
+                            <> {investedAsset.investedETH.toFixed(2)} ETH  </>
+                            :  
+                            "Connect Wallet"
                       }
                       
                       <span className="text-xs text-gray mx-5">
                       {isloading ? 
-                          <><ProductSkeleton width="5%" height="30px" /></>   // 로딩 중이고, 자산이 로딩 안된 상황
+                          <><ProductSkeleton width="20%" height="20px" /></>   // 로딩 중이고, 자산이 로딩 안된 상황
                           :
                           userAccount !== "" ?
-                            <> {Number(investedAsset.klayInvestedinKRW.toFixed(0)).toLocaleString()} 원  </>
+                            <> {Number(investedAsset.investedUSD.toFixed(0)).toLocaleString()} USD  </>
                             :  
                             ""
                       }
@@ -293,12 +354,12 @@ const loadAsset = async () => {
                           :
                           userAccount !== "" ?
                             <>                         
-                            일 수익 : {investedAsset.klayDailyIncomeKlay.toFixed(4)} KLAY 
+                            Daily Income : {investedAsset.dailyIncomeETH.toFixed(4)} ETH 
                             <span className="text-xs text-gray mx-5"> 
-                              {investedAsset.klayDailyIncomeKRW.toFixed(4)} 원
+                              {investedAsset.dailyIncomeUSD.toFixed(4)} USD
                             </span>                        
                             <br/>
-                            연 수익율 : {investedAsset.KlayTotalApr.toFixed(2)} %  </>
+                            average APR : {investedAsset.averageAPR.toFixed(2)} %  </>
                             :  
                             ""
                     }
@@ -306,21 +367,30 @@ const loadAsset = async () => {
                     </h5>
                   </div>
                   <div style={{marginTop:"20px"}}></div>
-                  <div className="border border-blue-200 rounded-lg p-5">
-                  <h5 class="mb-3 text-1xl font-bold tracking-tight text-black dark:text-white">투자 내용</h5>
+                  {isloading ? 
+                          <>
+                            <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
+                              <ProductSkeleton width="100%" height="150px" />
+                            </div>
+                          </>  
+                          :
+                          userAccount !== "" ?
+                            <>
+                  <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
+                  <h5 class="mb-3 text-1xl font-bold tracking-tight text-black dark:text-white">Portfolio</h5>
                   <div style={{marginTop:"10px"}}></div>
-                  <div class="mb-1 p-0 text-base font-medium dark:text-blue-500" style={{fontSize:"14px"}}>프로토콜 별</div>
+                  <div class="mb-1 p-0 text-base font-medium dark:text-blue-500" style={{fontSize:"14px"}}>Protocol list</div>
                   <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
                     {isloading ? 
                       <></>   // 로딩 중이고, 자산이 로딩 안된 상황
                       :
-                        investedAsset.klayProtocolCategorySummary.length > 0 ? // 100 * 76/100 = 76, 100 * 76/100 * 51.6/100 = 
+                        investedAsset.ethProtocolCategorySummary.length > 0 ? // 100 * 76/100 = 76, 100 * 76/100 * 51.6/100 = 
                           <>
                           <div class="bg-blue-200 h-2.5 rounded-full" style={{width:"100%"}}>                              
                               <div class="bg-blue-400 h-2.5 rounded-full" 
-                                    style={{width:`${Object.values(investedAsset.klayProtocolCategorySummary[0])[0] + Object.values(investedAsset.klayProtocolCategorySummary[1])[0]}%`}}>    
+                                    style={{width:`${Object.values(investedAsset.ethProtocolCategorySummary[0])[0] + Object.values(investedAsset.ethProtocolCategorySummary[1])[0]}%`}}>    
                                     <div class="bg-blue-600 h-2.5 rounded-full" 
-                                      style={{width:`${Object.values(investedAsset.klayProtocolCategorySummary[0])[0] * 100 / (Object.values(investedAsset.klayProtocolCategorySummary[0])[0] + Object.values(investedAsset.klayProtocolCategorySummary[1])[0])}%`}}>    
+                                      style={{width:`${Object.values(investedAsset.ethProtocolCategorySummary[0])[0] * 100 / (Object.values(investedAsset.ethProtocolCategorySummary[0])[0] + Object.values(investedAsset.ethProtocolCategorySummary[1])[0])}%`}}>    
                                     </div>
                               </div>
                           </div>
@@ -329,12 +399,11 @@ const loadAsset = async () => {
                           <></>
                     }
                     <span style={{fontSize:"12px", marginTop:"20px"}}>
-                      {/* Hashed-Ozys (Klaystation) - 75% */}
                         <span class="flex flex-wrap items-center text-xs font-medium text-gray-900 dark:text-white pt-2 gap-1">
                         {isloading ? 
-                          <></>   // 로딩 중이고, 자산이 로딩 안된 상황
+                          <></>  
                           :
-                          investedAsset.klayProtocolCategorySummary.map((res,index, array)=>(
+                          investedAsset.ethProtocolCategorySummary.map((res,index, array)=>(
                             array.length !== 0 ?
                               index < 2 ?
                                 <>
@@ -351,32 +420,59 @@ const loadAsset = async () => {
                   </div>
 
                   <div style={{marginTop:"40px"}}></div>
-                  <div class="mb-1 p-0 text-base font-medium dark:text-blue-500" style={{fontSize:"14px"}}>수익율 현황</div>
+                  <div class="mb-1 p-0 text-base font-medium dark:text-blue-500" style={{fontSize:"14px"}}>APR status</div>
                   <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
                     {isloading ? 
-                          <></>   // 로딩 중이고, 자산이 로딩 안된 상황
+                          <></>  
                           :
-                          investedAsset.klayAprStatus.myStatus !== 0 ? 
-                          <>
-                          <div class="bg-blue-600 h-2.5 rounded-full" style={{width:`${100 * investedAsset.klayAprStatus.myStatus / investedAsset.klayAprStatus.maxApr}%`}}></div>
-                          <span style={{fontSize:"12px", marginTop:"20px"}}> 
-                            My status - {investedAsset.klayAprStatus.myStatus.toFixed(2)} % 
-                            (Max {investedAsset.klayAprStatus.maxApr.toFixed(2)}%)
-                          </span>
-                          </>
+                          investedAsset.ethAprStatus.myStatus !== 0 ? 
+                          100 * investedAsset.ethAprStatus.myStatus / investedAsset.ethAprStatus.maxApr > 90 ?
+                            <>
+                            <div class="bg-blue-500 h-2.5 rounded-full" style={{width:`${100 * investedAsset.ethAprStatus.myStatus / investedAsset.ethAprStatus.maxApr}%`}}></div>
+                            <span style={{fontSize:"12px", marginTop:"20px"}}> 
+                              My status - {investedAsset.ethAprStatus.myStatus.toFixed(2)} % 
+                              (Max {investedAsset.ethAprStatus.maxApr.toFixed(2)}%)
+                            </span>
+                            </>
+                            :
+                            <>
+                            <div class="bg-red-500 h-2.5 rounded-full" style={{width:`${100 * investedAsset.ethAprStatus.myStatus / investedAsset.ethAprStatus.maxApr}%`}}></div>
+                            <span style={{fontSize:"12px", marginTop:"20px"}}> 
+                              My status - {investedAsset.ethAprStatus.myStatus.toFixed(2)} % 
+                              (Max {investedAsset.ethAprStatus.maxApr.toFixed(2)}%)
+                            </span>
+                            </>
                           :
                           <></>
                     }
                   </div>
-                  
                   </div>
+                  </>
+                  :  
+                  ""
+                }
+            <div style={{marginTop:"20px"}}></div>
 
-                  <div style={{marginTop:"30px"}}></div>
+            {isloading ? 
+                  <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
+                    <ProductSkeleton width="100%" height="150px" />
+                  </div>                
+                  :
+                  userAccount !== "" ?
+                  <>
+                  <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
+                  <h5 class="mb-3 text-1xl font-bold tracking-tight text-black dark:text-white">APR Performance Trend</h5>
+                  <Bar width={1000} height={438} data={chartData} options={chartOptions} />
+                  </div>
+                  </>
+                  :
+                  <></>
+            }
 
-      <div class="w-full max-w-md bg-white rounded-lg dark:bg-gray-800 dark:border-gray-700">
-        <div class="flex items-center justify-between mb-4"></div>
-        <div class="flow-root">
-          {isloading ? 
+
+            </SubTemplateBlockVertical>
+            <RightSubTemplateBlockVertical style={{backgroundColor:"rgb(249,250,251)"}}>
+            {isloading ? 
               <>
                 <ProductSkeleton width="90%" height="50px" style={{marginLeft:"20px"}}/>
               </> : 
@@ -384,11 +480,15 @@ const loadAsset = async () => {
               <>
               <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}> 
               
-              <h5 class="mb-2 text-1xl font-bold tracking-tight text-black dark:text-white">투자상품</h5>
+              <Title>
+                My Staking List
+              </Title>
                 <div style={{position:"relative"}} >
-                <button style={{width:"100px", display:"flex", alignItems:"center", justifyContent:"center"}} onClick={()=>setIsDropdown(!isDropdown)} id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-blue-700 border border-blue-200 bg-white hover:bg-blue-100 font-medium rounded-lg text-sm px-2 py-1.5 text-center inline-flex items-center" type="button">
-                  {sortStates[sortstate]}
-                </button>
+                <Link to="/findpools">
+                  <button style={{width:"100px", height:"40px", display:"flex", alignItems:"center", justifyContent:"center"}} id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-white border border-blue-200 bg-blue-600 hover:bg-blue-400 font-medium rounded-lg text-sm px-2 py-1.5 text-center inline-flex items-center" type="button">
+                    Add Staking
+                  </button>
+                </Link>
                 <div style={{position:"absolute"}} id="dropdown" class="bg-white divide-y divide-gray-100 rounded-lg shadow w-30 dark:bg-gray-700">
                       <ul hidden={isDropdown} class="text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
                         {sortStates.map((res)=>(
@@ -407,119 +507,25 @@ const loadAsset = async () => {
                 </div>
               </div>
 
-              <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700" style={{marginLeft:"15px"}}>
+              <div style={{marginTop:"20px"}}></div>
 
-              {investedAsset.klayProtocolCategory.map((res)=>(
-                <li class="py-3 sm:py-4">
-                  <div class="flex items-center space-x-4">
-                      <div class="flex-shrink-0">
-                          {res.poolName === "Kokoa Finance" ?
-                          <img class="w-8 h-8 rounded-full" src={icons["Kokoa"]} alt=""/> :      
-                          res.poolName === "Kleva" ?      
-                          <img class="w-8 h-8 rounded-full" src={icons["kleva"]} alt=""/> :  
-                          res.poolName === "Klaymore stakehouse" ?      
-                          <img class="w-8 h-8 rounded-full" src={icons["Klaymore"]} alt=""/> :  
-                          res.poolName === "Stake.ly" ?      
-                          <img class="w-8 h-8 rounded-full" src={icons["stakely"]} alt=""/> :  
-                          res.poolName === "Swapscanner" ?      
-                          <img class="w-8 h-8 rounded-full" src={icons["Swapscanner"]} alt=""/> :  
-                          res.poolName === "Klayswap" ?      
-                          <img class="w-8 h-8 rounded-full" src={icons["Klayswap"]} alt=""/> :  
-                          res.poolName === "BiFi" ?      
-                          <img class="w-8 h-8 rounded-full" src={icons["BiFi"]} alt=""/> :  
-                          res.poolName === "Klaybank" ?      
-                          <img class="w-8 h-8 rounded-full" src={icons["Klaybank"]} alt=""/> :  
-                          <img class="w-8 h-8 rounded-full" src={icons["Klaystation"]} alt=""/>
-                          }
-                      </div>
-                        
-                      <div class="flex-1 min-w-0">
-                      <div>
-                          <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                          {res.category === "빌려주기" ?
-                            <>담보물 제공</>
-                            :
-                            res.category
-                          }
-                          </span>
-                        </div>
-                        {res.investedKLAY * 1000 > 1 ?
-                          <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
-                            {res.investedKLAY.toFixed(2)} KLAY 예치중
-                          </span> :
-                          res.investedKLAY > 0 ?
-                          <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
-                            0.001 KLAY 이하 예치중
-                          </span> :
-                          <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-gray-300">
-                            예치 없음
-                          </span>
-                        }
-                          <p class="mt-2 text-sm font-medium text-gray-900 truncate dark:text-white">
-                              {res.poolName}
-                          </p>
-                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                            
-                          <div class="">
-                          <div class="">
-                            <div class="">
-                            <div class="mt-2 flex items-center text-sm text-gray-500">
-                              {/* <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                              </svg> */}
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-1.5 w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
-                              </svg>
-
-                                <TransScaleToken data={Number(res.tvlKLAY.toFixed(0))}/>
-                              </div>
-                            
-                            <div class="mt-2 flex items-center text-sm text-gray-500">
-                              <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                              </svg>
-                                <TransScale data={Number(res.tvlKRW.toFixed(0))}/>
-                              </div>
-
-                            <div class="mt-2 flex items-center text-sm text-gray-500">
-                                <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"></path>
-                                </svg>
-                                연 수익율 : 현재 {Number(res.apr.toFixed(2)).toLocaleString()} %
-                              </div>
-
-
-                              <div class="mt-2 flex items-center text-sm text-gray-500">
-                              <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25"></path>
-                              </svg>
-                                인출방법 : {poolInfos[res.poolName].wdMethod}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                              
-                              
-                          </p>
-                      </div>
-                      <Link to={`/detail/${res.contractAddress}`}>
-                        <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                          예치하기
-                        </a>
-                      </Link>
-                  </div>
-                </li>
+              <ul role="list">
+                {investedAsset.StakingDetailList.map((res)=>(
+                    <>
+                    <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
+                      <Card data={res} />
+                    </div>
+                    <div style={{marginTop:"20px"}}></div>
+              </>
                 ))}
-
+              
+      
                 </ul>
                 </>
                 :
                 <></>
               }
-              </div>
-            </div>
-
-            </SubTemplateBlockVertical>
+            </RightSubTemplateBlockVertical>
           </OverBox>
         </div>
       </div>
@@ -616,11 +622,9 @@ const Wrappertitle = styled.div`
 `
 const OverBox = styled.div`
 
+margin: 10px auto; 
+width: 1200px;
   /* position: relative;
-  margin: 10px auto; 
-  width: calc(100% - (230px));
-  width: -moz-calc(100% - (230px));
-  width: -webkit-calc(100% - (230px));
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
   height: 100vh;
@@ -635,12 +639,44 @@ const OverBox = styled.div`
   }
 `
 
+const RightSubTemplateBlockVertical = styled.div`
+     /* width: 900px; */
+     /* max-width: 500px; */
+    /* margin: 10px auto; */
+    /* max-width: 460px; */
+    width:100%;
+    margin-left: 30px;
+    /* padding-bottom: 10px; */
+    /* position: relative; */
+    /* padding:15px; */
+    /* display:flex; */
+    /* flex-direction:column; */
 
+    /* padding: 20px 25px !important;
+    background: #fff; */
+
+    color: rgba(0, 0, 0, 0.87);
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    min-width: 0px;
+    overflow-wrap: break-word;
+    background-color: rgb(255, 255, 255);
+    background-clip: border-box;
+    /* border: 1px solid rgba(0, 0, 0, 0.125); */
+    /* border-radius: 0.75rem; */
+    /* box-shadow: rgb(0 0 0 / 10%) 0rem 0.25rem 0.375rem -0.0625rem, rgb(0 0 0 / 6%) 0rem 0.125rem 0.25rem -0.0625rem; */
+    /* overflow: visible; */
+    
+  @media screen and (max-width: 500px){
+      width: 100%;
+      /* margin: 10px 10px; */
+      font-size: 12px;
+    }
+`;
 
 const SubTemplateBlockVertical = styled.div`
      /* width: 900px; */
      /* max-width: 500px; */
-    margin: 10px auto;
+    /* margin: 10px auto; */
     max-width: 460px;
     /* padding-bottom: 10px; */
     position: relative;
