@@ -28,33 +28,6 @@ import {Card} from "./CardComponent.jsx"
 // import etherfi from "../../../assets/tokens/etherfi.svg"
 // import ankr from "../../../assets/tokens/ankr.png"
 // import stakewise from "../../../assets/tokens/stakewise.png"
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  // Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  // Title,
-  Tooltip,
-  Legend
-);
-
-ChartJS.defaults.font.family = "Inter";
-ChartJS.defaults.scale.grid.drawOnChartArea = false;
-ChartJS.defaults.scale.grid.drawBorder = false;
-ChartJS.defaults.scale.ticks.color = "#abadc6";
-ChartJS.defaults.datasets.bar.borderRadius = 4;
-ChartJS.defaults.datasets.bar.maxBarThickness = 28;
-
 
 function Manage() {
 
@@ -194,33 +167,7 @@ const loadAsset = async () => {
     await delay(2000);
 
 
-    // const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
-
-    // console.log("localStorage.getItem.address", localStorage.getItem("address") === "")
-
-    let itemLoad = localStorage.getItem("loadItem");
-
-    let assetList = {}
-
-    if(itemLoad !== "loaded"){
-
-      assetList = {
-        data : testData
-      }
-
-    } else {
-
-      assetList = {
-        data : testDataAfter
-      }
-
-    }
-  
-
-    // const assetList = {
-    //   data : testDataAfter
-    // }
-
+    const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/eth/investInfo?userAddr=${userAccount}`)
 
     setInvestedAsset(assetList.data)
     localStorage.setItem("lastAddress", userAccount)
@@ -240,47 +187,7 @@ const loadAsset = async () => {
 
 }
 
-// function initialArrange() {
-
-//   investedAsset.klayProtocolCategory.sort(function(a,b){
-//     if(a.apr < b.apr) return 1;
-//     if(a.apr === b.apr) return 0;
-//     if(a.apr > b.apr) return -1;
-//   })    
-
-//   setInvestedAsset({...investedAsset})
-// }
-
-  function sortHandler(e) {
-    setSortstate(sortStates.indexOf(e.target.innerText))
-    setIsDropdown(true)
-
-    if(sortStates.indexOf(e.target.innerText) === 0){
-      investedAsset.klayProtocolCategory.sort(function(a,b){
-        if(a.apr < b.apr) return 1;
-        if(a.apr === b.apr) return 0;
-        if(a.apr > b.apr) return -1;
-      })    
-    } else if(sortStates.indexOf(e.target.innerText) === 1){
-      investedAsset.klayProtocolCategory.sort(function(a,b){
-        if(a.investedKLAY < b.investedKLAY) return 1;
-        if(a.investedKLAY === b.investedKLAY) return 0;
-        if(a.investedKLAY > b.investedKLAY) return -1;
-      })    
-    } else if(sortStates.indexOf(e.target.innerText) === 2){
-      investedAsset.klayProtocolCategory.sort(function(a,b){
-        if(a.tvlKLAY < b.tvlKLAY) return 1;
-        if(a.tvlKLAY === b.tvlKLAY) return 0;
-        if(a.tvlKLAY > b.tvlKLAY) return -1;
-      })    
-    }
-
-    setInvestedAsset({...investedAsset})
-  }
-
-
-
-const chartOptions = { plugins: { legend: { display: false } } };
+  const chartOptions = { plugins: { legend: { display: false } } };
 
   const chartData = {
     labels: investedAsset.ethPerformanceChartDate,
@@ -292,13 +199,6 @@ const chartOptions = { plugins: { legend: { display: false } } };
       },
     ],
   };
-
-  // ChartJS.defaults.datasets.line.borderColor = "#2563eb";
-  // ChartJS.defaults.datasets.bar.borderColor = "#2563eb";
-  // ChartJS.defaults.datasets.bar.backgroundColor = "#2563eb";
-
-  
-
 
   return (
     <>
@@ -481,23 +381,6 @@ const chartOptions = { plugins: { legend: { display: false } } };
                   ""
                 }
             <div style={{marginTop:"20px"}}></div>
-
-            {isloading ? 
-                  <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
-                    <ProductSkeleton width="100%" height="150px" />
-                  </div>                
-                  :
-                  userAccount !== "" ?
-                  <>
-                  <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
-                  <h5 class="mb-3 text-1xl font-bold tracking-tight text-black dark:text-white">APR Performance Trend</h5>
-                  <Bar width={1000} height={438} data={chartData} options={chartOptions} />
-                  </div>
-                  </>
-                  :
-                  <></>
-            }
-
 
             </SubTemplateBlockVertical>
             <RightSubTemplateBlockVertical style={{backgroundColor:"rgb(249,250,251)"}}>
