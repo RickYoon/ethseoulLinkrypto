@@ -1,18 +1,15 @@
 {
   "isInvested": true,
-  "totalAssetETH": 150,
+  "totalAssetETH": 120,
   "investedETH": 104.15,
-  "investedUSD": 23000,
-  "dailyIncomeETH": 0.023,
-  "dailyIncomeUSD": 3.7,
-  "averageAPR": 5.11,
-  "ethProtocolCategorySummary": [
-    { "frxETH + ETH LP": 42 },
-    { "frxETH Staking": 58 }
-  ],
+  "investedUSD": 198224,
+  "dailyIncomeETH": 0.0136,
+  "dailyIncomeUSD": 26.06,
+  "averageAPR": 4.8,
+  "ethProtocolCategorySummary": [{ "Lido staking": 100 }],
   "ethAprStatus": {
-    "myStatus": 5.107257898683967,
-    "maxApr": 7.560209552012428
+    "myStatus": 4.807257898683967,
+    "maxApr": 18.560209552012428
   },
   "ethPerformanceChartValue": [95, 85, 65],
   "ethPerformanceChartDate": ["06-01", "06-02", "06-03"],
@@ -24,25 +21,19 @@
   ],
   "StakingDetailList": [
     {
-      "id": "baef2dc8",
+      "id": "aa650e6f",
       "onEvent": false,
-      "stepNumber": 2,
+      "stepNumber": 1,
       "category": "Liquidity Staking",
-      "balanceETH": 10,
+      "balanceETH": 104.15,
       "boostCRV": 0,
       "boostBAL": 0,
-      "netAPR": 6.7,
-      "protocolName": "Frax",
+      "netAPR": 4.8,
       "investStep": [
         {
-          "protocol": "Frax",
-          "action": "deposit ETH",
-          "result": "get Base Token, frxETH"
-        },
-        {
-          "protocol": "Curve",
-          "action": "provide frxETH + ETH LP",
-          "result": "reward CRV + CVX + FXS Token"
+          "protocol": "Lido",
+          "action": "Deposit ETH",
+          "result": "Get reward bearing token, stETH"
         }
       ]
     }

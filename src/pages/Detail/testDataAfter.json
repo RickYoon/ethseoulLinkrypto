@@ -1,7 +1,7 @@
 {
   "id": "5f1eea81",
   "onEvent": false,
-  "balanceETH": 0,
+  "balanceETH": 104.8,
   "dailyIncomeETH": 0,
   "datailAPR": 0,
   "stepNumber": 2,
@@ -20,7 +20,7 @@
       "protocol": "Curve",
       "action": "Add Liquidity stETH/ETH and Stake",
       "result": "Reward Swap fee + $CRV Token",
-      "balance": 104.8,
+      "balance": 0,
       "balanceTokenname": "stETH",
       "balanceTokenAddress": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
       "linkURL": "https://curve.fi/#/ethereum/pools/steth/deposit"

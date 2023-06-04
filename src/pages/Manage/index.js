@@ -2,7 +2,6 @@ import hashed from 'assets/ci/hashed.png'
 import 'App.css'; 
 import {Link} from "react-router-dom"
 import styled, { keyframes } from 'styled-components';
-import WalletTokenDetailTable from "pages/Portfolio/WalletTokenDetailTable.js"
 import react, {useState, useEffect} from "react";
 import { useDispatch , useSelector } from 'react-redux';
 import { Bar } from "react-chartjs-2";
@@ -17,6 +16,7 @@ import BigNumber from "bignumber.js";
 
 import poolInfos from "./poolInfos.json"
 import testData from "./testData.json"
+import testDataAfter from "./testDataAfter.json"
 
 import ethereum from '../../assets/ci/ethereum.png';
 import Lido from "../../assets/tokens/blog.svg"
@@ -195,9 +195,32 @@ const loadAsset = async () => {
 
 
     // const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
-    const assetList = {
-      data : testData
+
+    // console.log("localStorage.getItem.address", localStorage.getItem("address") === "")
+
+    let itemLoad = localStorage.getItem("loadItem");
+
+    let assetList = {}
+
+    if(itemLoad !== "loaded"){
+
+      assetList = {
+        data : testData
+      }
+
+    } else {
+
+      assetList = {
+        data : testDataAfter
+      }
+
     }
+  
+
+    // const assetList = {
+    //   data : testDataAfter
+    // }
+
 
     setInvestedAsset(assetList.data)
     localStorage.setItem("lastAddress", userAccount)
@@ -384,19 +407,25 @@ const chartOptions = { plugins: { legend: { display: false } } };
                     {isloading ? 
                       <></>   // 로딩 중이고, 자산이 로딩 안된 상황
                       :
-                        investedAsset.ethProtocolCategorySummary.length > 0 ? // 100 * 76/100 = 76, 100 * 76/100 * 51.6/100 = 
+                        investedAsset.ethProtocolCategorySummary.length > 0 ? 
+                        investedAsset.ethProtocolCategorySummary.length < 1.5 ? 
                           <>
-                          <div class="bg-blue-200 h-2.5 rounded-full" style={{width:"100%"}}>                              
-                              <div class="bg-blue-400 h-2.5 rounded-full" 
-                                    style={{width:`${Object.values(investedAsset.ethProtocolCategorySummary[0])[0] + Object.values(investedAsset.ethProtocolCategorySummary[1])[0]}%`}}>    
-                                    <div class="bg-blue-600 h-2.5 rounded-full" 
-                                      style={{width:`${Object.values(investedAsset.ethProtocolCategorySummary[0])[0] * 100 / (Object.values(investedAsset.ethProtocolCategorySummary[0])[0] + Object.values(investedAsset.ethProtocolCategorySummary[1])[0])}%`}}>    
-                                    </div>
-                              </div>
+                          <div class="bg-blue-600 h-2.5 rounded-full" style={{width:"100%"}}>                              
                           </div>
-                        </>
+                          </>
+                          :
+                          <>
+                            <div class="bg-blue-200 h-2.5 rounded-full" style={{width:"100%"}}>                              
+                                <div class="bg-blue-400 h-2.5 rounded-full" 
+                                      style={{width:`${Object.values(investedAsset.ethProtocolCategorySummary[0])[0] + Object.values(investedAsset.ethProtocolCategorySummary[1])[0]}%`}}>    
+                                      <div class="bg-blue-600 h-2.5 rounded-full" 
+                                        style={{width:`${Object.values(investedAsset.ethProtocolCategorySummary[0])[0] * 100 / (Object.values(investedAsset.ethProtocolCategorySummary[0])[0] + Object.values(investedAsset.ethProtocolCategorySummary[1])[0])}%`}}>    
+                                      </div>
+                                </div>
+                            </div>
+                          </>
                       :
-                          <></>
+                        <></>
                     }
                     <span style={{fontSize:"12px", marginTop:"20px"}}>
                         <span class="flex flex-wrap items-center text-xs font-medium text-gray-900 dark:text-white pt-2 gap-1">
@@ -474,12 +503,7 @@ const chartOptions = { plugins: { legend: { display: false } } };
             <RightSubTemplateBlockVertical style={{backgroundColor:"rgb(249,250,251)"}}>
             {isloading ? 
               <>
-                <ProductSkeleton width="90%" height="50px" style={{marginLeft:"20px"}}/>
-              </> : 
-              userAccount !== "" ?
-              <>
-              <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}> 
-              
+              <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>               
               <Title>
                 My Staking List
               </Title>
@@ -489,20 +513,25 @@ const chartOptions = { plugins: { legend: { display: false } } };
                     Add Staking
                   </button>
                 </Link>
-                <div style={{position:"absolute"}} id="dropdown" class="bg-white divide-y divide-gray-100 rounded-lg shadow w-30 dark:bg-gray-700">
-                      <ul hidden={isDropdown} class="text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                        {sortStates.map((res)=>(
-                          res !== sortStates[sortstate] ?
-                          <li>
-                            <div onClick={sortHandler} class="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                             {res}
-                            </div>
-                          </li>
-                          :
-                          <></>
-                        ))}
-                      </ul>
-                  </div>
+                </div>
+              </div>
+                <div style={{marginTop:"20px"}}></div>
+                <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
+                  <ProductSkeleton width="100%" height="200px" />
+                </div>
+              </> : 
+              userAccount !== "" ?
+              <>
+              <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>               
+              <Title>
+                My Staking List
+              </Title>
+                <div style={{position:"relative"}} >
+                <Link to="/findpools">
+                  <button style={{width:"100px", height:"40px", display:"flex", alignItems:"center", justifyContent:"center"}} id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-white border border-blue-200 bg-blue-600 hover:bg-blue-400 font-medium rounded-lg text-sm px-2 py-1.5 text-center inline-flex items-center" type="button">
+                    Add Staking
+                  </button>
+                </Link>
 
                 </div>
               </div>
@@ -510,45 +539,33 @@ const chartOptions = { plugins: { legend: { display: false } } };
               <div style={{marginTop:"20px"}}></div>
 
               <ul role="list">
-                {investedAsset.StakingDetailList.map((res)=>(
-                    <>
-                    <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
-                      <Card data={res} />
-                    </div>
-                    <div style={{marginTop:"20px"}}></div>
-              </>
-                ))}
-              
-      
+                {isloading ? 
+                  <>
+                  </> 
+                  :
+                  userAccount !== "" ?                 
+                    investedAsset.StakingDetailList.map((res)=>(
+                      <>
+                        <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
+                          <Card data={res} />
+                        </div>
+                        <div style={{marginTop:"20px"}}></div>
+                      </>
+                    ))
+                  :
+                  <></>
+                }
                 </ul>
-                </>
-                :
-                <></>
+              </>
+              :
+              <></>
               }
             </RightSubTemplateBlockVertical>
           </OverBox>
         </div>
       </div>
       
-    <div id="crypto-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-      <div class="relative w-full max-w-md max-h-full">
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" data-modal-hide="crypto-modal">
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>  
-                <span class="sr-only">Close modal</span>
-            </button>
-            <div class="px-6 py-4 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-base font-semibold text-gray-900 lg:text-xl dark:text-white">
-                    Connect wallet
-                </h3>
-            </div>
-            <div class="p-6">
-                <p class="text-sm font-normal text-gray-500 dark:text-gray-400">Connect with one of our available wallet providers or create a new one.</p>
-
-            </div>
-      </div>
-    </div>
-  </div>
+    
     </>
   );
 }

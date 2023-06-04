@@ -17,11 +17,11 @@ export function Card (props) {
                 {data.category}
                 </span>
                 <div class="mt-2">
-                {data.depositETH === 0 ?
+                {data.balanceETH === 0 ?
                 <span class="mt-2 bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-gray-300">
                     {data.balanceETH} ETH
                 </span> :
-                <span class="mt-2 bg-blue-100 text-gray-800 text-base font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-gray-300">
+                <span class="mt-2 bg-red-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-gray-300">
                     {data.balanceETH} ETH deposited
                 </span>                   
                 }
@@ -92,6 +92,46 @@ export function Card (props) {
                         <p class="pb-2 text-base font-normal text-gray-500 dark:text-gray-400">{data.investStep[2].result}</p>
                     </li>
                 </ol>
+                </>
+                :
+                data.stepNumber === 4 ?
+                <>
+                <ol class="mt-5 ml-5 relative border-l border-gray-700 dark:border-gray-700">                  
+                    <li class="mb-0 ml-6">
+                        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                            <img src={icons[data.investStep[0].protocol]} alt=""/>
+                        </span>
+                        <h3 class="flex items-center mb-1 text-base font-semibold text-gray-900 dark:text-white">{data.investStep[0].action}</h3>
+                        <p class="pb-2 text-base font-normal text-gray-500 dark:text-gray-400">{data.investStep[0].result}</p>
+                    </li>
+                </ol>
+                <ol class="mt-2 ml-5 relative border-l border-gray-700 dark:border-gray-700">                   
+                    <li class="ml-6">
+                    <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                            <img src={icons[data.investStep[1].protocol]} alt=""/>
+                        </span>
+                        <h3 class="flex items-center mb-1 text-base font-semibold text-gray-900 dark:text-white">{data.investStep[1].action}</h3>
+                        <p class="pb-2 text-base font-normal text-gray-500 dark:text-gray-400">{data.investStep[1].result}</p>
+                    </li>
+                </ol>
+                <ol class="mt-2 ml-5 relative">                  
+                    <li class="ml-6">
+                    <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                            <img src={icons[data.investStep[2].protocol]} alt=""/>
+                        </span>
+                        <h3 class="flex items-center mb-1 text-base font-semibold text-gray-900 dark:text-white">{data.investStep[2].action}</h3>
+                        <p class="pb-2 text-base font-normal text-gray-500 dark:text-gray-400">{data.investStep[2].result}</p>
+                    </li>
+                </ol>
+                <ol class="mt-2 ml-5 relative">                  
+                    <li class="ml-6">
+                    <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                            <img src={icons[data.investStep[3].protocol]} alt=""/>
+                        </span>
+                        <h3 class="flex items-center mb-1 text-base font-semibold text-gray-900 dark:text-white">{data.investStep[3].action}</h3>
+                        <p class="pb-2 text-base font-normal text-gray-500 dark:text-gray-400">{data.investStep[3].result}</p>
+                    </li>
+                </ol>                
                 </>
                 :
                 <></>

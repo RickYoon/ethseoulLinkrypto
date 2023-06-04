@@ -2,7 +2,6 @@ import hashed from 'assets/ci/hashed.png'
 import 'App.css'; 
 import {Link} from "react-router-dom"
 import styled, { keyframes } from 'styled-components';
-import WalletTokenDetailTable from "pages/Portfolio/WalletTokenDetailTable.js"
 import react, {useState, useEffect} from "react";
 import { useDispatch , useSelector } from 'react-redux';
 import { Bar } from "react-chartjs-2";
@@ -17,11 +16,18 @@ import BigNumber from "bignumber.js";
 
 import poolInfos from "./poolInfos.json"
 import testData from "./testData.json"
+import testDataAfter from "./testDataAfter.json"
+import singleData from "./singleDeposit.json"
 
 import ethereum from '../../assets/ci/ethereum.png';
 import Lido from "../../assets/tokens/blog.svg"
 import fraxfinance from "../../assets/tokens/fraxfinance.png"
 import curve from "../../assets/tokens/curve.png"
+import Swal from 'sweetalert2'
+
+import {metamaskDepositExecutor, metamaskWithdrawalExecutor, metamaskSwapExecutor, metamaskOusdtDepositExecutor,metamaskOusdtWithdrawalExecutor} from './metamaskExecutor.js';
+import {kaikasKlayDepositExecutor, kaikasKlayWithdrawalExecutor} from './kaikasExecutor.js';
+
 
 // import Rocketpool from "../../../assets/tokens/rocketpool.png"
 // import swell from "../../../assets/tokens/swell.svg"
@@ -65,6 +71,7 @@ function Manage() {
   const [selection, setSelection] = useState("deposit");
   const [sortstate, setSortstate] = useState(0);
   const sortStates = ["APR","Balance"]
+  const [itemLoad, setItemLoad] = useState(false);
 
   const userAccount = useSelector(state => state.account) // 지갑주소
   const walletProvider = useSelector(state => state.walletProvider) // 프로바이더
@@ -145,9 +152,39 @@ function Manage() {
       const time = Date.now();
 
       // const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
-      const assetList = {
-        data : testData
+      // const assetList = {
+      //   data : testData
+      // }
+
+      let itemLoad = localStorage.getItem("loadItem");
+
+
+      let assetList = {}
+
+      if(id === "aa650e6f"){
+
+        assetList = {
+          data : singleData
+        }
+
+
+      } else {
+
+        if(itemLoad !== true){
+    
+          assetList = {
+            data : testData
+          }
+    
+        } else {
+    
+          assetList = {
+            data : testDataAfter
+          }
+    
+        }
       }
+
       setInvestedAsset(assetList.data)
       localStorage.setItem("lastAddress", userAccount)
       localStorage.setItem("assetList", JSON.stringify(assetList.data))
@@ -200,6 +237,105 @@ function Manage() {
   const selectionWithdrawler = () => {
     setSelection("withdraw")
   }
+
+
+  const requestDeposit = async () => {
+
+    // if(walletProvider === "metamask"){
+
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' })
+    
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+
+    setIsloading(true)
+
+    let trxReturn = await metamaskDepositExecutor(userAccount, id, 140)  
+
+    let assetList = {}
+
+    assetList = {
+      data : testDataAfter
+    }
+
+    setInvestedAsset(assetList.data)
+
+    console.log("trxReturn",trxReturn)
+  
+    setIsloading(false)
+    
+     
+    // setItemLoad(true)
+    localStorage.setItem("loadItem", "loaded")
+
+    // Toast.fire({
+    //   icon: 'success',
+    //   title: '예치가 성공적으로 실행되었습니다.',
+    //   html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
+    // })
+
+    // if(chainId === "0x2019"){
+      
+    //     const Toast = Swal.mixin({
+    //       toast: true,
+    //       position: 'top-end',
+    //       showConfirmButton: false,
+    //       timer: 5000,
+    //       timerProgressBar: true,
+    //       didOpen: (toast) => {
+    //         toast.addEventListener('mouseenter', Swal.stopTimer)
+    //         toast.addEventListener('mouseleave', Swal.resumeTimer)
+    //       }
+    //     })
+
+    //     setIsloading(true)
+
+    //     let trxReturn = {}
+
+    //     trxReturn = await metamaskDepositExecutor(userAccount, id, 140)  
+      
+    //     setIsloading(false)
+
+    //     Toast.fire({
+    //       icon: 'success',
+    //       title: '예치가 성공적으로 실행되었습니다.',
+    //       html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
+    //     })
+
+    //     await loadAsset()
+
+    //   } else {
+  
+    //     await window.ethereum.request({
+    //         method: 'wallet_switchEthereumChain',
+    //         params: [{ chainId: '0x5' }], // chainId must be in hexadecimal numbers
+    //     });
+  
+    //   }
+
+  }
+
+  const chartOptions = { plugins: { legend: { display: false } } };
+
+  const chartData = {
+    labels: ["4-2","4-16","5-2","5-16","6-2"],
+    datasets: [
+      {
+        label: "",
+        data: [4.9,5.1,6.9,6.5,5.3],
+        backgroundColor: ["#2563eb"]
+      },
+    ],
+  };
   
 
 
@@ -222,14 +358,13 @@ function Manage() {
               <div style={{paddingTop:"20px"}}/>
 
                   <div class="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <h5 class="mb-2 text-1xl font-medium tracking-tight text-black dark:text-black">Invested ETH</h5>
+                    <h5 class="mb-2 text-1xl font-medium tracking-tight text-black dark:text-black">Invested</h5>
                     <h5 class="mb-2 text-2xl font-medium tracking-tight text-black dark:text-black">
                       {isloading ? 
                           <><ProductSkeleton width="20%" height="30px" /></>   
                           :
                           userAccount !== "" ?
                             <> {investedAsset.balanceETH.toFixed(2)} ETH  </>
-                            // <> 12.5 ETH  </>
                             :  
                             "Connect Wallet"
                       }
@@ -241,9 +376,9 @@ function Manage() {
                           :
                           userAccount !== "" ?
                             <>
-                            Daily Income : {investedAsset.dailyIncomeETH.toFixed(4)} ETH 
-                            <br/>
-                            APR : {investedAsset.datailAPR.toFixed(2)} %  
+                            {/* Daily Income : {investedAsset.dailyIncomeETH.toFixed(4)} ETH  */}
+                            {/* <br/> */}
+                            {/* APR : {investedAsset.datailAPR.toFixed(2)} %   */}
                             </>
                             :  
                             ""
@@ -252,7 +387,20 @@ function Manage() {
                     </h5>
                   </div>
                   <div style={{marginTop:"20px"}}></div>
-              
+
+                  {id === "aa650e6f" ?
+                  <div className="border border-blue-200 rounded-lg p-5" style={{backgroundColor:"white"}}>
+                  <h5 class="mb-3 text-1xl font-bold tracking-tight text-black dark:text-white">APR Performance Trend (%)</h5>
+                  <Bar width={1000} height={438} data={chartData} options={chartOptions} />
+                  <div style={{float:"right", fontWeight:"400", color:"gray"}}>powerd by The Graph</div>
+                  <div style={{height:"20px", fontWeight:"400", color:"gray"}}></div>
+                  
+                  </div>
+                  :
+                  <></>
+                  }
+                  <div style={{marginTop:"20px"}}></div>
+                  
 
             </SubTemplateBlockVertical>
             <RightSubTemplateBlockVertical style={{backgroundColor:"rgb(249,250,251)"}}>
@@ -352,7 +500,7 @@ function Manage() {
                                       placeholder={`${res.balanceTokenname} Balance : ${res.balance} `} required 
                                     />
                                 </div> 
-                                <button type="submit" class="ml-5 py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                <button  onClick={requestDeposit} type="submit" class="ml-5 py-2.5 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                 <span style={{width:"10px"}}>deposit</span>
                               </button>
                             </div>

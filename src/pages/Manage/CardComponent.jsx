@@ -37,7 +37,7 @@ export function Card (props) {
                 <span class="mt-2 bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-gray-300">
                     {data.balanceETH} ETH
                 </span> :
-                <span class="mt-2 bg-blue-100 text-gray-800 text-base font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-gray-300">
+                <span class="mt-2 bg-red-200 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-gray-300">
                     {data.balanceETH} ETH deposited
                 </span>                   
                 }

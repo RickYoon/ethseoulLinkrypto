@@ -1,7 +1,7 @@
 {
-  "id": "5f1eea81",
+  "id": "aa650e6f",
   "onEvent": false,
-  "balanceETH": 0,
+  "balanceETH": 104.8,
   "dailyIncomeETH": 0,
   "datailAPR": 0,
   "stepNumber": 2,
@@ -15,15 +15,6 @@
       "balanceTokenAddress": "",
       "contractAddress": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
       "linkURL": "https://stake.lido.fi/"
-    },
-    {
-      "protocol": "Curve",
-      "action": "Add Liquidity stETH/ETH and Stake",
-      "result": "Reward Swap fee + $CRV Token",
-      "balance": 104.8,
-      "balanceTokenname": "stETH",
-      "balanceTokenAddress": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
-      "linkURL": "https://curve.fi/#/ethereum/pools/steth/deposit"
     }
   ]
 }

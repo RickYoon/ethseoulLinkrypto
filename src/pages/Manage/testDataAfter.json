@@ -1,0 +1,55 @@
+{
+  "isInvested": true,
+  "totalAssetETH": 120,
+  "investedETH": 104.15,
+  "investedUSD": 198224,
+  "dailyIncomeETH": 0.047,
+  "dailyIncomeUSD": 89.7,
+  "averageAPR": 16.5,
+  "ethProtocolCategorySummary": [{ "Curve LP farming": 100 }],
+  "ethAprStatus": {
+    "myStatus": 16.807257898683967,
+    "maxApr": 18.560209552012428
+  },
+  "ethPerformanceChartValue": [95, 85, 92],
+  "ethPerformanceChartDate": ["06-01", "06-02", "06-03"],
+  "myStakingList": [
+    {
+      "depositedETH": 0.5,
+      "protocolName": "fraxfinance"
+    }
+  ],
+  "StakingDetailList": [
+    {
+      "id": "5f1eea81",
+      "onEvent": false,
+      "category": "LP farming",
+      "balanceETH": 104.15,
+      "boostCRV": 0,
+      "boostBAL": 0,
+      "netAPR": 16.5,
+      "stepNumber": 2,
+      "investStep": [
+        {
+          "protocol": "Lido",
+          "action": "Deposit ETH",
+          "result": "Get reward bearing token, stETH",
+          "balance": 15.85,
+          "balanceTokenname": "ETH",
+          "balanceTokenAddress": "",
+          "contractAddress": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+          "linkURL": "https://stake.lido.fi/"
+        },
+        {
+          "protocol": "Curve",
+          "action": "Add Liquidity stETH/ETH and Stake",
+          "result": "Reward $CRV + ETH + stETH Token",
+          "balance": 3.5,
+          "balanceTokenname": "stETH",
+          "balanceTokenAddress": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
+          "linkURL": "https://curve.fi/#/ethereum/pools/steth/deposit"
+        }
+      ]
+    }
+  ]
+}
