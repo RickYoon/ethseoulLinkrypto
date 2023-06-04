@@ -151,39 +151,11 @@ function Manage() {
       setIsloading(true)
       const time = Date.now();
 
-      // const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/service/investInfo?userAddr=${userAccount}`)
+      const assetList = await axios.get(`https://wp22qg4khl.execute-api.ap-northeast-2.amazonaws.com/v1/eth/detail?userAddr=${userAccount}&&poolId=${id}&&mode=deposit`)
+
       // const assetList = {
       //   data : testData
       // }
-
-      let itemLoad = localStorage.getItem("loadItem");
-
-
-      let assetList = {}
-
-      if(id === "aa650e6f"){
-
-        assetList = {
-          data : singleData
-        }
-
-
-      } else {
-
-        if(itemLoad !== true){
-    
-          assetList = {
-            data : testData
-          }
-    
-        } else {
-    
-          assetList = {
-            data : testDataAfter
-          }
-    
-        }
-      }
 
       setInvestedAsset(assetList.data)
       localStorage.setItem("lastAddress", userAccount)
@@ -203,32 +175,6 @@ function Manage() {
 
   }
   
-  function sortHandler(e) {
-    setSortstate(sortStates.indexOf(e.target.innerText))
-    setIsDropdown(true)
-
-    if(sortStates.indexOf(e.target.innerText) === 0){
-      investedAsset.klayProtocolCategory.sort(function(a,b){
-        if(a.apr < b.apr) return 1;
-        if(a.apr === b.apr) return 0;
-        if(a.apr > b.apr) return -1;
-      })    
-    } else if(sortStates.indexOf(e.target.innerText) === 1){
-      investedAsset.klayProtocolCategory.sort(function(a,b){
-        if(a.investedKLAY < b.investedKLAY) return 1;
-        if(a.investedKLAY === b.investedKLAY) return 0;
-        if(a.investedKLAY > b.investedKLAY) return -1;
-      })    
-    } else if(sortStates.indexOf(e.target.innerText) === 2){
-      investedAsset.klayProtocolCategory.sort(function(a,b){
-        if(a.tvlKLAY < b.tvlKLAY) return 1;
-        if(a.tvlKLAY === b.tvlKLAY) return 0;
-        if(a.tvlKLAY > b.tvlKLAY) return -1;
-      })    
-    }
-
-    setInvestedAsset({...investedAsset})
-  }
 
   const selectionDeposit = () => {
     setSelection("deposit")
@@ -241,86 +187,7 @@ function Manage() {
 
   const requestDeposit = async () => {
 
-    // if(walletProvider === "metamask"){
-
-    const chainId = await window.ethereum.request({ method: 'eth_chainId' })
-    
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 5000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-      }
-    })
-
-    setIsloading(true)
-
-    let trxReturn = await metamaskDepositExecutor(userAccount, id, 140)  
-
-    let assetList = {}
-
-    assetList = {
-      data : testDataAfter
-    }
-
-    setInvestedAsset(assetList.data)
-
-    console.log("trxReturn",trxReturn)
-  
-    setIsloading(false)
-    
-     
-    // setItemLoad(true)
-    localStorage.setItem("loadItem", "loaded")
-
-    // Toast.fire({
-    //   icon: 'success',
-    //   title: '예치가 성공적으로 실행되었습니다.',
-    //   html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
-    // })
-
-    // if(chainId === "0x2019"){
-      
-    //     const Toast = Swal.mixin({
-    //       toast: true,
-    //       position: 'top-end',
-    //       showConfirmButton: false,
-    //       timer: 5000,
-    //       timerProgressBar: true,
-    //       didOpen: (toast) => {
-    //         toast.addEventListener('mouseenter', Swal.stopTimer)
-    //         toast.addEventListener('mouseleave', Swal.resumeTimer)
-    //       }
-    //     })
-
-    //     setIsloading(true)
-
-    //     let trxReturn = {}
-
-    //     trxReturn = await metamaskDepositExecutor(userAccount, id, 140)  
-      
-    //     setIsloading(false)
-
-    //     Toast.fire({
-    //       icon: 'success',
-    //       title: '예치가 성공적으로 실행되었습니다.',
-    //       html: `<a href=https://scope.klaytn.com/tx/${trxReturn.transactionHash} target="_blank">상세내역보기</a>`
-    //     })
-
-    //     await loadAsset()
-
-    //   } else {
-  
-    //     await window.ethereum.request({
-    //         method: 'wallet_switchEthereumChain',
-    //         params: [{ chainId: '0x5' }], // chainId must be in hexadecimal numbers
-    //     });
-  
-    //   }
+    alert("Direct deposits are currently blocked for security reasons")
 
   }
 
